@@ -126,7 +126,7 @@
 
     [mysqld]
     # Uncomment the following line to enable access from remote hosts.
-    bind-address    = 0.0.0.0
+    # bind-address    = 0.0.0.0
     innodb_data_home_dir      = /var/db/mysql/innodb_data
     innodb_log_group_home_dir = /var/db/mysql/innodb_log
     datadir                   = /var/db/mysql/datadir
@@ -195,8 +195,8 @@
 
     По умолчанию установка MariaDB имеет анонимного пользователя, что позволяет любому пользователю
     входить в MariaDB без необходимости создавать для
-    него учетную запись пользователя. Это предназначено только для тестирования и для того, чтобы сделать установку
-    немного более плавной. Вы должны удалить их перед переходом в
+    него учетную запись пользователя. Это предназначено только для тестирования и для того, 
+    чтобы сделать установку немного более плавной. Вы должны удалить их перед переходом в
     производственную среду.
 
     Remove anonymous users? [Y/n] y
@@ -225,3 +225,57 @@
     Removing privileges on test database...
     ... Success!
 
+### Протестируем установку
+    mysql --user=root --password
+
+Увидим следующий вывод:
+
+    Enter password:
+    Welcome to the MariaDB monitor.  Commands end with ; or \g.
+    Your MariaDB connection id is 23
+    Server version: 10.6.10-MariaDB FreeBSD Ports
+
+    Copyright (c) 2000, 2018, Oracle, MariaDB Corporation Ab and others.
+
+    Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+В приглашении MariaDB вы можете перечислить существующие базы данных:
+
+    root@localhost [(none)]> show databases;
+
+Увидим что-то вроде этого:
+
+    root@localhost [(none)]> show databases;
+    +--------------------+
+    | Database           |
+    +--------------------+
+    | datadir            |
+    | information_schema |
+    | innodb_data        |
+    | innodb_log         |
+    | mysql              |
+    | performance_schema |
+    +--------------------+
+    6 rows in set (0.002 sec)
+
+Вход с помощью пользователя root в последних версиях заблокирован, поэтому:
+
+    root@localhost [(none)]> CREATE database climatic_db;
+    Query OK, 1 rows affected (0.011 sec)
+
+    root@localhost [(none)]> CREATE USER 'my_db_admin'@'localhost' IDENTIFIED BY 'password';
+    Query OK, 0 rows affected (0.018 sec)
+
+    root@localhost [(none)]> GRANT ALL PRIVILEGES ON climatic_db.* TO 'my_db_admin'@'localhost';
+    Query OK, 0 rows affected (0.013 sec)
+
+    root@localhost [(none)]> CREATE USER 'my_db_admin'@'%' IDENTIFIED BY 'password';
+    Query OK, 0 rows affected (0.016 sec)
+
+    root@localhost [(none)]> GRANT ALL PRIVILEGES ON climatic_db.* TO 'my_db_admin'@'%';
+    Query OK, 0 rows affected (0.022 sec)
+
+Проверяем доступ к БД:
+
+![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/7.jpg "general view")​
+![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/8.jpg "general view")​
