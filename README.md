@@ -275,7 +275,21 @@
     root@localhost [(none)]> GRANT ALL PRIVILEGES ON climatic_db.* TO 'my_db_admin'@'%';
     Query OK, 0 rows affected (0.022 sec)
 
-Проверяем доступ к БД:
+## Проверяем доступ к БД, подключаемся и настраиваем:
 
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/7.jpg "general view")​
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/8.jpg "general view")​
+
+Добавим новую таблицу sensor_data в нашу бд:
+
+![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/9.jpg "general view")​
+
+Импортируем старые данные, записанные в формате csv:
+
+    Data;Temperature;Humidity
+    2021-11-29 23:33:18;25,6;49,8
+    2021-11-29 23:33:40;25,6;49,8
+    2021-11-29 23:33:45;25,6;49,8
+
+![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/10.jpg "general view")​
+![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/11.jpg "general view")​
