@@ -7,11 +7,16 @@
 
 Для решения задачи были выбраны уже имеющиеся и лежащие без дела железки:
 1. Raspberry Pi Zero W
+
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/3.jpg "general view")​
+
 2. Флешка на 4Gb
+
 3. Датчик температуры и влажности
+
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/1.jpg "general view")​
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/2.jpg "general view")​
+
 4. В дополнение TrueNAS сервер.
 
 ## Установка MySQL базы данных в jail на сервер TrueNAS
@@ -20,4 +25,11 @@
 Т.к. все пулы у меня созданы на засыпающих дисках, то я сделаю отдельный пул на отдельно дополнительном диске, чтобы остальным эта тюрьма не мешала засыпать.
 
 Подключаем диск, включаем NAS и проверяем настройки подключенного диска:
+
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/4.jpg "general view")​
+
+Создаем пул, заходим в jail и выбираем его для хранения тюрьм. Создаем новую тюрьму:
++ Имя - я назвал MySQL
++ Выпуск - выбрал 13.1-RELEASE-p4
++ Интерфейс IPv4 - Выбрал свой единственный интерфейс re0
++ Адрес IPv4 - указал 192.168.88.251 не входящий в диапазон DHCP сервера моего роутера (100-200)
