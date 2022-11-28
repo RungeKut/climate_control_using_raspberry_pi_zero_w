@@ -1,6 +1,6 @@
 #!/bin/bash
 # Описание : Сценарий для регистрации показаний датчиков в csv файл CSVed
-
+interval="5s"
 # Параметры подключения к Базе данных:
 db_user="my_db_admin"
 db_password="password"
@@ -19,88 +19,154 @@ logfile="/home/pi/HumidityLog.csv"
 logdir="/home/pi/HumidityLogs"
 cells=0
 flag=0
-function dht21 {
-#  echo Polling DHT22 every $SLEEP seconds.
-    for (( ; ; ))
-    do
-      flag=0
+function dht21_to_csv {
+# echo Polling DHT22 every $SLEEP seconds.
+  for (( ; ; ))
+  do
+    flag=0
 # Чтение даты и времени
-      mdate=$(date +"%Y-%m-%d %H:%M:%S")
+    mdate=$(date +"%Y-%m-%d %H:%M:%S")
 # Чтение температуры (Команда 2> /dev/null для того чтобы удалить сообщения об ошибках из вывода tail)
-      temperature=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_temp_input 2> /dev/null)
+    temperature=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_temp_input 2> /dev/null)
 # Чтение влажности
-      humidity=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_humidityrelative_input 2> /dev/null)
-      if [ -z "$temperature" ]
+    humidity=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_humidityrelative_input 2> /dev/null)
+    if [ -z "$temperature" ]
+    then
+    {
+      flag=1
+    }
+    fi
+    if [ -z "$humidity" ]
+    then
+    {
+      flag=1
+    }
+    fi
+    if [ "$flag" -eq 0 ]
+    then
+    {
+      if ! [ -f "$logfile" ]
       then
       {
-        flag=1
+        echo "Data;Temperature;Humidity" >> "$logfile"
       }
       fi
-      if [ -z "$humidity" ]
+      temperature_parse=$(echo "scale=1; $temperature / 1000" | bc)
+      echo -n "$mdate;" >> "$logfile"
+      echo -n "$temperature_parse;" >> "$logfile"
+      humidity_parse=$(echo "scale=1; $humidity / 1000" | bc)
+      echo -n "$humidity_parse" >> "$logfile"
+      cells=$[$cells +1]
+      echo >> "$logfile"
+    }
+    fi
+    sleep $interval
+    if [ "$cells" -eq 1000000 ]
+    then
+    {
+      cells=0
+      if [ -f "$logfile" ]
       then
       {
-        flag=1
-      }
-      fi
-      if [ "$flag" -eq 0 ]
-      then
-      {
-        if ! [ -f "$logfile" ]
+        if ! [ -d "$logdir" ]
         then
         {
-          echo "Data;Temperature;Humidity" >> "$logfile"
+          mkdir "$logdir"
         }
         fi
-        temperature_parse=$(echo "scale=1; $temperature / 1000" | bc)
-        echo -n "$mdate;" >> "$logfile"
-        echo -n "$temperature_parse;" >> "$logfile"
-        humidity_parse=$(echo "scale=1; $humidity / 1000" | bc)
-        echo -n "$humidity_parse" >> "$logfile"
-        cells=$[$cells +1]
-        echo >> "$logfile"
-echo "$mdate  $temperature_parse°C  $humidity_parse%"
-	mysql -u $db_user -p$db_password -h $db_host -P $db_port -vve "\
-	INSERT INTO $db_name.$db_table_name ($db_dataColumn,$db_temperatureColumn,$db_humidityColumn) \
-	VALUES ('$mdate','$temperature_parse','$humidity_parse');" > $db_logfile
+        tstamp=$(date +"%Y_%m_%d")
+        mv -v "$logfile" "$logdir/HumidityLog_${tstamp}.csv"
       }
-      fi
-
-      sleep 5s
-      if [ "$cells" -eq 1000000 ]
-      then
+      else
       {
-        cells=0
-        if [ -f "$logfile" ]
-        then
-        {
-          if ! [ -d "$logdir" ]
-          then
-          {
-            mkdir "$logdir"
-          }
-          fi
-          tstamp=$(date +"%Y_%m_%d")
-          mv -v "$logfile" "$logdir/HumidityLog_${tstamp}.csv"
-        }
-        else
-        {
-          echo Ошибка. При попытке сохранить лог-файл - сценарий не смог его найти.
-          exit 1
-        }
-        fi
+        echo Ошибка. При попытке сохранить лог-файл - сценарий не смог его найти.
+        exit 1
       }
       fi
-    done
+    }
+    fi
+  done
 }
-
+function dht21_to_db {
+  for (( ; ; ))
+  do
+    flag=0
+    mdate=$(date +"%Y-%m-%d %H:%M:%S")
+    temperature=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_temp_input 2> /dev/null)
+    humidity=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_humidityrelative_input 2> /dev/null)
+    if [ -z "$temperature" ]
+    then
+    {
+      flag=1
+    }
+    fi
+    if [ -z "$humidity" ]
+    then
+    {
+      flag=1
+    }
+    fi
+    if [ "$flag" -eq 0 ]
+    then
+    {
+      temperature_parse=$(echo "scale=1; $temperature / 1000" | bc)
+      humidity_parse=$(echo "scale=1; $humidity / 1000" | bc)
+      mysql -u $db_user -p$db_password -h $db_host -P $db_port -vve "\
+      INSERT INTO $db_name.$db_table_name ($db_dataColumn,$db_temperatureColumn,$db_humidityColumn) \
+      VALUES ('$mdate','$temperature_parse','$humidity_parse');" > $db_logfile
+    }
+    fi
+    sleep $interval
+  done
+}
+function dht21_print {
+  for (( ; ; ))
+  do
+    flag=0
+    mdate=$(date +"%Y-%m-%d %H:%M:%S")
+    temperature=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_temp_input 2> /dev/null)
+    humidity=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_humidityrelative_input 2> /dev/null)
+    if [ -z "$temperature" ]
+    then
+    {
+      flag=1
+    }
+    fi
+    if [ -z "$humidity" ]
+    then
+    {
+      flag=1
+    }
+    fi
+    if [ "$flag" -eq 0 ]
+    then
+    {
+      temperature_parse=$(echo "scale=1; $temperature / 1000" | bc)
+      humidity_parse=$(echo "scale=1; $humidity / 1000" | bc)
+      echo "$mdate  $temperature_parse°C  $humidity_parse%"
+    }
+    fi
+    sleep $interval
+  done
+}
 case $1 in
 
-  dht21)
-    dht21
+  dht21_to_csv)
+    dht21_to_csv
+  ;;
+
+  dht21_to_db)
+    dht21_to_db
+  ;;
+
+  dht21_print)
+    dht21_print
   ;;
 
   h)
-    echo Вводи write_log_sensors dht21
+    echo Вводи write_log_sensors dht21_to_csv чтобы писать в csv файл
+    echo Вводи write_log_sensors dht21_to_db чтобы писать в базу данных. Настройки внутри скрипта!
+    echo Вводи write_log_sensors dht21_print чтобы печатать в консоль.
   ;;
 
   *)
@@ -109,4 +175,3 @@ case $1 in
 esac
  
 # END
-
