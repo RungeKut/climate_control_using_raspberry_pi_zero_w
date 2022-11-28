@@ -293,3 +293,24 @@
 
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/10.jpg "general view")​
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/11.jpg "general view")​
+
+## Настраиваем клиент mysql на raspberry
+Обновим список пакетов:
+
+    sudo apt-get update
+
+Посмотрим доступные клиенты:
+
+    apt-cache search mariadb-client-core
+
+    mariadb-client-core-10.0 - MariaDB database core client binaries
+    mariadb-client-core-10.3 - MariaDB database core client binaries
+    mariadb-client-core-10.5 - MariaDB database core client binaries
+
+Установим последнюю версию:
+
+    sudo apt-get install mariadb-client-core-10.5
+
+Проверим доступность нашей базы:
+
+    mysql -u my_db_admin -p -h 192.168.88.251

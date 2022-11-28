@@ -1,6 +1,18 @@
 #!/bin/bash
 # Описание : Сценарий для регистрации показаний датчиков в csv файл CSVed
 
+# Параметры подключения к Базе данных:
+db_user="my_db_admin"
+db_password="password"
+db_host="192.168.88.251"
+db_port="3306"
+db_name="climatic_db"
+db_table_name="sensor_data"
+db_logfile="/home/pi/mysql.log"
+db_dataColumn="data"
+db_temperatureColumn="temperature"
+db_humidityColumn="humidity"
+
 # Укажите полный путь к файлам LOG1 и LOG2
 # Пример: LOG1="/home/pi/zgo/html/dht22_humi.txt"
 logfile="/home/pi/HumidityLog.csv"
@@ -13,12 +25,11 @@ function dht21 {
     do
       flag=0
 # Чтение даты и времени
-      mdate="$(date +%Y.%m.%d\ %H:%M:%S\;)"
+      mdate=$(date +"%Y-%m-%d %H:%M:%S")
 # Чтение температуры (Команда 2> /dev/null для того чтобы удалить сообщения об ошибках из вывода tail)
       temperature=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_temp_input 2> /dev/null)
 # Чтение влажности
       humidity=$(/bin/tail /sys/devices/platform/dht11@0/iio:device0/in_humidityrelative_input 2> /dev/null)
-
       if [ -z "$temperature" ]
       then
       {
@@ -40,16 +51,17 @@ function dht21 {
           echo "Data;Temperature;Humidity" >> "$logfile"
         }
         fi
-        temp="$(printf "%2.1f" $(echo "scale=1; $temperature / 1000" | bc) )"
-        temp=${temp/./,}
-        echo -n $mdate >> "$logfile"
-        echo -n "$temp;" >> "$logfile"
-        temp="$(printf "%2.1f" $(echo "scale=1; $humidity / 1000" | bc) )"
-        temp=${temp/./,}
-        echo -n "$temp" >> "$logfile"
+        temperature_parse=$(echo "scale=1; $temperature / 1000" | bc)
+        echo -n "$mdate;" >> "$logfile"
+        echo -n "$temperature_parse;" >> "$logfile"
+        humidity_parse=$(echo "scale=1; $humidity / 1000" | bc)
+        echo -n "$humidity_parse" >> "$logfile"
         cells=$[$cells +1]
-#        echo $cells
         echo >> "$logfile"
+echo "$mdate  $temperature_parse°C  $humidity_parse%"
+	mysql -u $db_user -p$db_password -h $db_host -P $db_port -vve "\
+	INSERT INTO $db_name.$db_table_name ($db_dataColumn,$db_temperatureColumn,$db_humidityColumn) \
+	VALUES ('$mdate','$temperature_parse','$humidity_parse');" > $db_logfile
       }
       fi
 
@@ -57,7 +69,6 @@ function dht21 {
       if [ "$cells" -eq 1000000 ]
       then
       {
-#        echo WHOOSH
         cells=0
         if [ -f "$logfile" ]
         then
