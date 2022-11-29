@@ -7,11 +7,10 @@
 
   // Graphs
   const ctx = document.getElementById('myChart')
-
   var temperatureData =
   {
     labels: [
-      'Sunday',
+      $inputArray[0][0],
       'Monday',
       'Tuesday',
       'Wednesday',
