@@ -319,3 +319,414 @@
 Проверим доступность нашей базы:
 
     mysql -u my_db_admin -p -h 192.168.88.251
+
+## Установка сервера Apache в jail на сервер TrueNAS
+Подключаемся по SSH к нашему серверу и заходим в созданный нами выше jail:
+
+    iocage console MySQL
+
+Смотрим доступные версии:
+
+    pkg search apache24
+
+На данны момент вывод такой:
+
+    apache24-2.4.54                Version 2.4.x of Apache web server
+
+Устанавливаем: (в запросе подтвержления вводим Y)
+
+    pkg install apache24
+
+Чтобы включить Apache как службу нужно добавить apache24_enable="YES" в файл /etc/rc.conf.  Для этого используем команду sysrc:
+
+    sysrc apache24_enable="YES"
+
+Стартуем:
+
+    service apache24 start
+
+Проверяем:
+
+    service apache24 status
+
+Вывод:
+
+    apache24 is running as pid 20815.
+
+Далее заходим уже на нашем ПК в браузере по адресу нашей jail и видим:
+
+![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/12.jpg "general view")​
+
+## Установка интерпретатора PHP в jail на сервер TrueNAS
+
+    pkg search php81
+    pkg install php81
+
+Процесс установки:
+
+    Updating FreeBSD repository catalogue...
+    FreeBSD repository is up to date.
+    All repositories are up to date.
+    The following 1 package(s) will be affected (of 0 checked):
+
+    New packages to be INSTALLED:
+            php81: 8.1.12
+
+    Number of packages to be installed: 1
+
+    The process will require 27 MiB more space.
+    4 MiB to be downloaded.
+
+    Proceed with this action? [y/N]: y
+    [MySQL] [1/1] Fetching php81-8.1.12.pkg: 100%    4 MiB   2.3MB/s    00:02
+    Checking integrity... done (0 conflicting)
+    [MySQL] [1/1] Installing php81-8.1.12...
+    [MySQL] [1/1] Extracting php81-8.1.12: 100%
+
+Так же нелюходимо установить модуль для Apache:
+
+    pkg install mod_php81
+
+Процесс установки:
+
+    Updating FreeBSD repository catalogue...
+    FreeBSD repository is up to date.
+    All repositories are up to date.
+    The following 1 package(s) will be affected (of 0 checked):
+
+    New packages to be INSTALLED:
+            mod_php81: 8.1.12
+
+    Number of packages to be installed: 1
+
+    The process will require 6 MiB more space.
+    2 MiB to be downloaded.
+
+    Proceed with this action? [y/N]: y
+    [MySQL] [1/1] Fetching mod_php81-8.1.12.pkg: 100%    2 MiB 870.2kB/s    00:02
+    Checking integrity... done (0 conflicting)
+    [MySQL] [1/1] Installing mod_php81-8.1.12...
+    [MySQL] [1/1] Extracting mod_php81-8.1.12: 100%
+    [activating module `php' in /usr/local/etc/apache24/httpd.conf]
+    =====
+    Message from mod_php81-8.1.12:
+
+    --
+    ******************************************************************************
+
+    Make sure index.php is part of your DirectoryIndex.
+
+    You should add the following to your Apache configuration file:
+
+    <FilesMatch "\.php$">
+        SetHandler application/x-httpd-php
+    </FilesMatch>
+    <FilesMatch "\.phps$">
+        SetHandler application/x-httpd-php-source
+    </FilesMatch>
+
+    ******************************************************************************
+
+    If you are building PHP-based ports in poudriere(8) or Synth with ZTS enabled,
+    add WITH_MPM=event to /etc/make.conf to prevent build failures.
+
+    ******************************************************************************
+
+Добавляем строчки в конфиг которые он нас просит. Для этого создадим новый конфиг:
+
+    nano /usr/local/etc/apache24/Includes/php.conf
+
+И добавим туда следующее:
+
+    <IfModule dir_module>
+             DirectoryIndex index.php index.html
+
+             <FilesMatch "\.php$">
+                      SetHandler application/x-httpd-php
+             </FilesMatch>
+
+             <FilesMatch "\.phps$">
+                      SetHandler application/x-httpd-php-source
+             </FilesMatch>
+    </IfModule>
+
+Проверим - что у нас установилось:
+
+    php -v
+
+    PHP 8.1.12 (cli) (built: Nov 17 2022 06:24:56) (NTS)
+    Copyright (c) The PHP Group
+    Zend Engine v4.1.12, Copyright (c) Zend Technologies
+
+Установим дополнения:
+
+    pkg install php81-extensions
+
+Процесс установки:
+
+    Updating FreeBSD repository catalogue...
+    FreeBSD repository is up to date.
+    All repositories are up to date.
+    The following 17 package(s) will be affected (of 0 checked):
+    
+    New packages to be INSTALLED:
+            php81-ctype: 8.1.12
+            php81-dom: 8.1.12
+            php81-extensions: 1.1
+            php81-filter: 8.1.12
+            php81-iconv: 8.1.12
+            php81-opcache: 8.1.12
+            php81-pdo: 8.1.12
+            php81-pdo_sqlite: 8.1.12
+            php81-phar: 8.1.12
+            php81-posix: 8.1.12
+            php81-session: 8.1.12
+            php81-simplexml: 8.1.12
+            php81-sqlite3: 8.1.12
+            php81-tokenizer: 8.1.12
+            php81-xml: 8.1.12
+            php81-xmlreader: 8.1.12
+            php81-xmlwriter: 8.1.12
+    
+    Number of packages to be installed: 17
+    
+    The process will require 3 MiB more space.
+    767 KiB to be downloaded.
+    
+    Proceed with this action? [y/N]: y
+    [MySQL] [1/17] Fetching php81-simplexml-8.1.12.pkg: 100%   24 KiB  24.1kB/s    00:01
+    [MySQL] [2/17] Fetching php81-session-8.1.12.pkg: 100%   37 KiB  37.5kB/s    00:01
+    [MySQL] [3/17] Fetching php81-sqlite3-8.1.12.pkg: 100%   22 KiB  23.0kB/s    00:01
+    [MySQL] [4/17] Fetching php81-iconv-8.1.12.pkg: 100%   18 KiB  18.7kB/s    00:01
+    [MySQL] [5/17] Fetching php81-posix-8.1.12.pkg: 100%   13 KiB  13.5kB/s    00:01
+    [MySQL] [6/17] Fetching php81-xmlreader-8.1.12.pkg: 100%   14 KiB  14.8kB/s    00:01
+    [MySQL] [7/17] Fetching php81-pdo_sqlite-8.1.12.pkg: 100%   14 KiB  14.0kB/s    00:01
+    [MySQL] [8/17] Fetching php81-phar-8.1.12.pkg: 100%  107 KiB 109.3kB/s    00:01
+    [MySQL] [9/17] Fetching php81-filter-8.1.12.pkg: 100%   21 KiB  21.9kB/s    00:01
+    [MySQL] [10/17] Fetching php81-dom-8.1.12.pkg: 100%   62 KiB  63.2kB/s    00:01
+    [MySQL] [11/17] Fetching php81-opcache-8.1.12.pkg: 100%  331 KiB 338.8kB/s    00:01
+    [MySQL] [12/17] Fetching php81-tokenizer-8.1.12.pkg: 100%   13 KiB  12.9kB/s    00:01
+    [MySQL] [13/17] Fetching php81-xml-8.1.12.pkg: 100%   21 KiB  21.1kB/s    00:01
+    [MySQL] [14/17] Fetching php81-pdo-8.1.12.pkg: 100%   48 KiB  49.6kB/s    00:01
+    [MySQL] [15/17] Fetching php81-extensions-1.1.pkg: 100%    1 KiB   1.4kB/s    00:01
+    [MySQL] [16/17] Fetching php81-xmlwriter-8.1.12.pkg: 100%   15 KiB  15.2kB/s    00:01
+    [MySQL] [17/17] Fetching php81-ctype-8.1.12.pkg: 100%    6 KiB   6.5kB/s    00:01
+    Checking integrity... done (0 conflicting)
+    [MySQL] [1/17] Installing php81-dom-8.1.12...
+    [MySQL] [1/17] Extracting php81-dom-8.1.12: 100%
+    [MySQL] [2/17] Installing php81-pdo-8.1.12...
+    [MySQL] [2/17] Extracting php81-pdo-8.1.12: 100%
+    [MySQL] [3/17] Installing php81-simplexml-8.1.12...
+    [MySQL] [3/17] Extracting php81-simplexml-8.1.12: 100%
+    [MySQL] [4/17] Installing php81-session-8.1.12...
+    [MySQL] [4/17] Extracting php81-session-8.1.12: 100%
+    [MySQL] [5/17] Installing php81-sqlite3-8.1.12...
+    [MySQL] [5/17] Extracting php81-sqlite3-8.1.12: 100%
+    [MySQL] [6/17] Installing php81-iconv-8.1.12...
+    [MySQL] [6/17] Extracting php81-iconv-8.1.12: 100%
+    [MySQL] [7/17] Installing php81-posix-8.1.12...
+    [MySQL] [7/17] Extracting php81-posix-8.1.12: 100%
+    [MySQL] [8/17] Installing php81-xmlreader-8.1.12...
+    [MySQL] [8/17] Extracting php81-xmlreader-8.1.12: 100%
+    [MySQL] [9/17] Installing php81-pdo_sqlite-8.1.12...
+    [MySQL] [9/17] Extracting php81-pdo_sqlite-8.1.12: 100%
+    [MySQL] [10/17] Installing php81-phar-8.1.12...
+    [MySQL] [10/17] Extracting php81-phar-8.1.12: 100%
+    [MySQL] [11/17] Installing php81-filter-8.1.12...
+    [MySQL] [11/17] Extracting php81-filter-8.1.12: 100%
+    [MySQL] [12/17] Installing php81-opcache-8.1.12...
+    [MySQL] [12/17] Extracting php81-opcache-8.1.12: 100%
+    [MySQL] [13/17] Installing php81-tokenizer-8.1.12...
+    [MySQL] [13/17] Extracting php81-tokenizer-8.1.12: 100%
+    [MySQL] [14/17] Installing php81-xml-8.1.12...
+    [MySQL] [14/17] Extracting php81-xml-8.1.12: 100%
+    [MySQL] [15/17] Installing php81-xmlwriter-8.1.12...
+    [MySQL] [15/17] Extracting php81-xmlwriter-8.1.12: 100%
+    [MySQL] [16/17] Installing php81-ctype-8.1.12...
+    [MySQL] [16/17] Extracting php81-ctype-8.1.12: 100%
+    [MySQL] [17/17] Installing php81-extensions-1.1...
+    [MySQL] [17/17] Extracting php81-extensions-1.1: 100%
+    =====
+    Message from php81-dom-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-dom.ini
+    =====
+    Message from php81-pdo-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-pdo.ini
+    =====
+    Message from php81-simplexml-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-simplexml.ini
+    =====
+    Message from php81-session-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-18-session.ini
+    =====
+    Message from php81-sqlite3-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-sqlite3.ini
+    =====
+    Message from php81-iconv-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-iconv.ini
+    =====
+    Message from php81-posix-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-posix.ini
+    =====
+    Message from php81-xmlreader-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-30-xmlreader.ini
+    =====
+    Message from php81-pdo_sqlite-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-30-pdo_sqlite.ini
+    =====
+    Message from php81-phar-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-phar.ini
+    =====
+    Message from php81-filter-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-filter.ini
+    =====
+    Message from php81-opcache-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-10-opcache.ini
+    =====
+    Message from php81-tokenizer-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-tokenizer.ini
+    =====
+    Message from php81-xml-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-xml.ini
+    =====
+    Message from php81-xmlwriter-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-xmlwriter.ini
+    =====
+    Message from php81-ctype-8.1.12:
+    
+    --
+    This file has been added to automatically load the installed extension:
+    /usr/local/etc/php/ext-20-ctype.ini
+
+Установим cURL — кроссплатформенная служебная программа командной строки, позволяющая взаимодействовать с множеством различных серверов по множеству различных протоколов с синтаксисом URL:
+
+    pkg search php81-curl
+    pkg install php81-curl
+
+Установим Xdebug — средство профилирования и отладки PHP скриптов. XDebug поставляется как расширение для PHP. Работает по протоколу DBGp:
+
+    pkg search php81-xdebug
+
+Отвечает - нет доступных пакетов :( ну ОК.
+
+Установим MySQL — это расширение PHP, которое добавляет в язык полную поддержку баз данных MySQL:
+
+    pkg search php81-mysqli
+    pkg install php81-mysqli
+
+Установим SOAP (Simple Object Access Protocol) представляет из себя основанный на XML протокол, предназначенный для обмена структурированной информацией между распределенными приложениями поверх существующих в веб протоколов, например HTTP:
+
+    pkg search php81-soap
+    pkg install php81-soap
+
+Установим ZIP:
+
+    pkg search php81-zip
+    pkg install php81-zip
+
+Установим GD - это графическая библиотека (Графика для WEB-дизайна). Она позволяет быстро создавать изображения с помощью линий, дуг, текста, выбирать цвет, копировать части из других изображений, выполнять заливку, и сохранять результат в PNG- файл:
+
+    pkg search php81-gd
+    pkg install php81-gd
+
+Ну и по-идее все. Можно закинуть index.php по адресу /usr/local/www/ следующего содержания:
+
+    <?php
+        phpinfo();
+    ?>
+
+И проверить что страничка информации открылась. НО! Всеравно нихрена не работает. Ищем где же у нас установились расштрения например так:
+
+    find / -name pdo_sqlite.so
+
+И видим следующее:
+
+    /usr/local/lib/php/20210902/pdo_sqlite.so
+
+Мда.. Ну и название.. Чтож, добавляем путь в php.ini:
+
+    extension_dir = "./usr/local/lib/php/20210902/"
+
+И перезагружаем сервер Apache:
+
+    service apache24 restart
+
+Т.е. в отличие от винды тут не нужно прописывать нужные extension в php.ini все осталось закоментировано.
+## Настроим два виртуальных хоста site и phpMyAdmin:
+Откроем Midnight Commander от имени администратора:
+
+    root@MySQL:~ # mc
+
+## Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам:
+Включите сервер ssh. Для этого отредактируйте файл /etc/rc.conf и добавьте строку:
+
+    sysrc sshd_enable="YES"
+
+По умолчанию для root запрещен логин по ssh. Если все-таки хотите это разрешить (помните, что это небезопасно, лучше пользоваться командой su), то отредактируйте файл /etc/ssh/sshd_config, раскомментируйте и измените следующие опции (они должны быть в файле в таком виде, как указано здесь):
+
+     ...
+    PermitRootLogin yes
+     ...
+    PasswordAuthentication yes
+     ...
+
+Запустите или Перезапустите sshd (доступны, кроме restart, команды start и stop):
+
+    /etc/rc.d/sshd start
+    /etc/rc.d/sshd restart
+
+    или, если демон уже запущен, так:
+
+    # killall -HUP sshd
+
+Так же не лишним будет сбросить пароль root:
+
+    passwd root
+    Changing local password for root
+    New Password:
+    Retype New Password:
