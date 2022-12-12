@@ -1,4 +1,15 @@
-# Климат в комнате
+<h1 id="A0" align="center">Климат в комнате</h1>
+<h2 id="A0">Содержание</h2>
+<ol>
+<li><a href="A1">Мои наблюдения</a></li>
+<li><a href="A2">Паяем датчик к Raspberry</a></li>
+<li><a href="A3">Установка MySQL базы данных в jail на сервер TrueNAS</a></li>
+<li><a href="A4">Настраиваем клиент mysql на raspberry</a></li>
+<li><a href="A5">Установка сервера Apache в jail на сервер TrueNAS</a></li>
+<li><a href="A6">Установка интерпретатора PHP в jail на сервер TrueNAS</a></li>
+<li><a href="A7">Настроим два виртуальных хоста site и phpMyAdmin</a></li>
+<li><a href="A8">Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам</a></li>
+</ol>
 Это самое важное, особенно если есть маленький ребенок.
 
 Мне стало интересно и необходимо знать температуру и влажность в детской комнате, т.к. у ребенка появились шелушки на коже, сильно пересыхал носик под утро и появлялся кашель.
@@ -19,12 +30,13 @@
 
 4. В дополнение TrueNAS сервер.
 
-## Мои наблюдения
+<h2 id="A1" align="center">Мои наблюдения</h2>
 1. Если в середине дня нагнать влажность в квартире с 10% до хотя бы 30% то в течении ночи с отключенным увлажнителем она сохраняется при условии падения температуры в течении ночи.
 
-## Паяем датчик к Raspberry
+<h2 id="A2" align="center">Паяем датчик к Raspberry</h2>
+![Image alt](supplementary_files/13.jpg "general view")
 
-## Установка MySQL базы данных в jail на сервер TrueNAS
+<h2 id="A3" align="center">Установка MySQL базы данных в jail на сервер TrueNAS</h2>
 Для этого нас понадобиться Пул на котором будет храниться наша тюрьма.
 
 Т.к. все пулы у меня созданы на засыпающих дисках, то я сделаю отдельный пул на отдельно дополнительном диске, чтобы остальным эта тюрьма не мешала засыпать.
@@ -299,7 +311,7 @@
 ![Image alt](supplementary_files/10.jpg "general view")​
 ![Image alt](supplementary_files/11.jpg "general view")​
 
-## Настраиваем клиент mysql на raspberry
+<h2 id="A4" align="center">Настраиваем клиент mysql на raspberry</h2>
 Обновим список пакетов:
 
     sudo apt-get update
@@ -320,7 +332,7 @@
 
     mysql -u my_db_admin -p -h 192.168.88.251
 
-## Установка сервера Apache в jail на сервер TrueNAS
+<h2 id="A5" align="center">Установка сервера Apache в jail на сервер TrueNAS</h2>
 Подключаемся по SSH к нашему серверу и заходим в созданный нами выше jail:
 
     iocage console MySQL
@@ -357,7 +369,7 @@
 
 ![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/12.jpg "general view")​
 
-## Установка интерпретатора PHP в jail на сервер TrueNAS
+<h2 id="A6" align="center">Установка интерпретатора PHP в jail на сервер TrueNAS</h2>
 
     pkg search php81
     pkg install php81
@@ -680,7 +692,7 @@
         phpinfo();
     ?>
 
-И проверить что страничка информации открылась. НО! Всеравно нихрена не работает. Ищем где же у нас установились расштрения например так:
+И проверить что страничка информации открылась. НО! Всеравно нихрена не работает. Ищем где же у нас установились расширения например так:
 
     find / -name pdo_sqlite.so
 
@@ -697,12 +709,13 @@
     service apache24 restart
 
 Т.е. в отличие от винды тут не нужно прописывать нужные extension в php.ini все осталось закоментировано.
-## Настроим два виртуальных хоста site и phpMyAdmin:
+
+<h2 id="A7" align="center">Настроим два виртуальных хоста site и phpMyAdmin</h2>
 Откроем Midnight Commander от имени администратора:
 
     root@MySQL:~ # mc
 
-## Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам:
+<h2 id="A8" align="center">Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам</h2>
 Включите сервер ssh. Для этого отредактируйте файл /etc/rc.conf и добавьте строку:
 
     sysrc sshd_enable="YES"
