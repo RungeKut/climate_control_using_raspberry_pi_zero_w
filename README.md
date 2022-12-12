@@ -1,23 +1,28 @@
 # Климат в комнате
-Это самое важное особенно если есть маленький ребенок.
+Это самое важное, особенно если есть маленький ребенок.
 
-Мне стало иинтересно и необходимо знать температуру и влажность в детской комнате, т.к. у ребенка появились шелушки на коже, сильно пересыхал носик под утро и появлялся кашель.
+Мне стало интересно и необходимо знать температуру и влажность в детской комнате, т.к. у ребенка появились шелушки на коже, сильно пересыхал носик под утро и появлялся кашель.
 
-Задача была сделать не просто монитор, полноченный логер. Чтобы можно было сравнить температуру например год назад. Так же необходимо было знать мгновенные показания не заходя в комнату.
+Задача была сделать не просто монитор, полноценный логер. Чтобы можно было сравнить температуру например год назад. Так же необходимо было знать мгновенные показания не заходя в комнату.
 
 Для решения задачи были выбраны уже имеющиеся и лежащие без дела железки:
 1. Raspberry Pi Zero W
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/3.jpg "general view")​
+![Image alt](supplementary_files/3.jpg "general view")​
 
 2. Флешка на 4Gb
 
 3. Датчик температуры и влажности
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/1.jpg "general view")​
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/2.jpg "general view")​
+![Image alt](supplementary_files/1.jpg "general view")​
+![Image alt](supplementary_files/2.jpg "general view")​
 
 4. В дополнение TrueNAS сервер.
+
+## Мои наблюдения
+1. Если в середине дня нагнать влажность в квартире с 10% до хотя бы 30% то в течении ночи с отключенным увлажнителем она сохраняется при условии падения температуры в течении ночи.
+
+## Паяем датчик к Raspberry
 
 ## Установка MySQL базы данных в jail на сервер TrueNAS
 Для этого нас понадобиться Пул на котором будет храниться наша тюрьма.
@@ -26,7 +31,7 @@
 
 Подключаем диск, включаем NAS и проверяем настройки подключенного диска:
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/4.jpg "general view")​
+![Image alt](supplementary_files/4.jpg "general view")​
 
 Степень сжатия я оставил LZ4, но наврядли это поможет оптимально сжимать БД. Наверное в будущем стоит поставить значение none, чтобы немного увеличить производительность. Этот размер записи соответствует размеру [стандартной страницы](https://mariadb.com/kb/en/innodb-system-variables/#innodb_page_size), используемой движком InnoDB базы данных MariaDB.
 
@@ -100,11 +105,11 @@
 
 Создадим наборы данных innodb_data, innodb_log и datadir в Share/iocage для монтирования:
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/5.jpg "general view")​
+![Image alt](supplementary_files/5.jpg "general view")​
 
 Добавим точки монтирования для innodb_data, innodb_log и datadir:
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/6.jpg "general view")​
+![Image alt](supplementary_files/6.jpg "general view")​
 
 Запустим тюрьму:
 
@@ -277,12 +282,12 @@
 
 ## Проверяем доступ к БД, подключаемся и настраиваем:
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/7.jpg "general view")​
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/8.jpg "general view")​
+![Image alt](supplementary_files/7.jpg "general view")​
+![Image alt](supplementary_files/8.jpg "general view")​
 
 Добавим новую таблицу sensor_data в нашу бд:
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/9.jpg "general view")​
+![Image alt](supplementary_files/9.jpg "general view")​
 
 Импортируем старые данные, записанные в формате csv:
 
@@ -291,8 +296,8 @@
     2021-11-29 23:33:40;25,6;49,8
     2021-11-29 23:33:45;25,6;49,8
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/10.jpg "general view")​
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/11.jpg "general view")​
+![Image alt](supplementary_files/10.jpg "general view")​
+![Image alt](supplementary_files/11.jpg "general view")​
 
 ## Настраиваем клиент mysql на raspberry
 Обновим список пакетов:
