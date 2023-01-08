@@ -1,0 +1,17 @@
+arm_freq=800
+
+display_auto_detect=1
+
+disable_overscan=1
+
+#Звуковой выход
+dtparam=audio=on
+disable_audio_dither=1
+pwm_sample_bits=8
+dtoverlay=pwm-2chan,pin=12,func=4 #,pin2=13,func2=2
+
+#Датчик температуры и влажности
+dtoverlay=dht11
+
+#Отключить светодиод питания чтобы ночью не светился
+dtparam=act_led_trigger=default-on
