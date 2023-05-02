@@ -1,14 +1,14 @@
 <h1 id="A0" align="center">Климат в комнате</h1>
 <h2 id="A0">Содержание</h2>
 <ol>
-<li><a href="A1">Мои наблюдения</a></li>
-<li><a href="A2">Паяем датчик к Raspberry</a></li>
-<li><a href="A3">Установка MySQL базы данных в jail на сервер TrueNAS</a></li>
-<li><a href="A4">Настраиваем клиент mysql на raspberry</a></li>
-<li><a href="A5">Установка сервера Apache в jail на сервер TrueNAS</a></li>
-<li><a href="A6">Установка интерпретатора PHP в jail на сервер TrueNAS</a></li>
-<li><a href="A7">Настроим два виртуальных хоста site и phpMyAdmin</a></li>
-<li><a href="A8">Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам</a></li>
+<li><a href="#мои-наблюдения">Мои наблюдения</a></li>
+<li><a href="#паяем-датчик-к-raspberry">Паяем датчик к Raspberry</a></li>
+<li><a href="#установка-mysql-базы-данных-в-jail-на-сервер-truenas">Установка MySQL базы данных в jail на сервер TrueNAS</a></li>
+<li><a href="#настраиваем-клиент-mysql-на-raspberry">Настраиваем клиент mysql на raspberry</a></li>
+<li><a href="#установка-сервера-apache-в-jail-на-сервер-truenas">Установка сервера Apache в jail на сервер TrueNAS</a></li>
+<li><a href="#установка-интерпретатора-php-в-jail-на-сервер-truenas">Установка интерпретатора PHP в jail на сервер TrueNAS</a></li>
+<li><a href="#настроим-два-виртуальных-хоста-site-и-phpmyadmin">Настроим два виртуальных хоста site и phpMyAdmin</a></li>
+<li><a href="#настроим-ssh-в-jail-на-сервере-truenas-для-более-удобного-доступа-к-файлам">Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам</a></li>
 </ol>
 Это самое важное, особенно если есть маленький ребенок.
 
@@ -19,14 +19,14 @@
 Для решения задачи были выбраны уже имеющиеся и лежащие без дела железки:
 1. Raspberry Pi Zero W
 
-![Image alt](supplementary_files/3.jpg "general view")​
+<p align="center"><img src="supplementary_files/3.jpg" width="600"></p>
 
 2. Флешка на 4Gb
 
 3. Датчик температуры и влажности
 
-![Image alt](supplementary_files/1.jpg "general view")​
-![Image alt](supplementary_files/2.jpg "general view")​
+<p align="center"><img src="supplementary_files/1.jpg" width="600"></p>
+<p align="center"><img src="supplementary_files/2.jpg" width="600"></p>
 
 4. В дополнение TrueNAS сервер.
 
@@ -35,7 +35,7 @@
 
 <h2 id="A2" align="center">Паяем датчик к Raspberry</h2>
 
-![Image alt](supplementary_files/13.jpg "general view")
+<p align="center"><img src="supplementary_files/13.jpg" width="600"></p>
 
 <h2 id="A3" align="center">Установка MySQL базы данных в jail на сервер TrueNAS</h2>
 Для этого нас понадобиться Пул на котором будет храниться наша тюрьма.
@@ -44,7 +44,7 @@
 
 Подключаем диск, включаем NAS и проверяем настройки подключенного диска:
 
-![Image alt](supplementary_files/4.jpg "general view")​
+<p align="center"><img src="supplementary_files/4.jpg" width="600"></p>
 
 Степень сжатия я оставил LZ4, но наврядли это поможет оптимально сжимать БД. Наверное в будущем стоит поставить значение none, чтобы немного увеличить производительность. Этот размер записи соответствует размеру [стандартной страницы](https://mariadb.com/kb/en/innodb-system-variables/#innodb_page_size), используемой движком InnoDB базы данных MariaDB.
 
@@ -118,11 +118,11 @@
 
 Создадим наборы данных innodb_data, innodb_log и datadir в Share/iocage для монтирования:
 
-![Image alt](supplementary_files/5.jpg "general view")​
+<p align="center"><img src="supplementary_files/5.jpg" width="600"></p>
 
 Добавим точки монтирования для innodb_data, innodb_log и datadir:
 
-![Image alt](supplementary_files/6.jpg "general view")​
+<p align="center"><img src="supplementary_files/6.jpg" width="600"></p>
 
 Запустим тюрьму:
 
@@ -295,12 +295,12 @@
 
 ## Проверяем доступ к БД, подключаемся и настраиваем:
 
-![Image alt](supplementary_files/7.jpg "general view")​
-![Image alt](supplementary_files/8.jpg "general view")​
+<p align="center"><img src="supplementary_files/7.jpg" width="600"></p>
+<p align="center"><img src="supplementary_files/8.jpg" width="600"></p>
 
 Добавим новую таблицу sensor_data в нашу бд:
 
-![Image alt](supplementary_files/9.jpg "general view")​
+<p align="center"><img src="supplementary_files/9.jpg" width="600"></p>
 
 Импортируем старые данные, записанные в формате csv:
 
@@ -309,8 +309,8 @@
     2021-11-29 23:33:40;25,6;49,8
     2021-11-29 23:33:45;25,6;49,8
 
-![Image alt](supplementary_files/10.jpg "general view")​
-![Image alt](supplementary_files/11.jpg "general view")​
+<p align="center"><img src="supplementary_files/10.jpg" width="600"></p>
+<p align="center"><img src="supplementary_files/11.jpg" width="600"></p>
 
 <h2 id="A4" align="center">Настраиваем клиент mysql на raspberry</h2>
 Обновим список пакетов:
@@ -368,7 +368,7 @@
 
 Далее заходим уже на нашем ПК в браузере по адресу нашей jail и видим:
 
-![Image alt](https://github.com/RungeKut/climate_control_using_raspberry_pi_zero_w/blob/main/supplementary_files/12.jpg "general view")​
+<p align="center"><img src="supplementary_files/12.jpg" width="600"></p>
 
 <h2 id="A6" align="center">Установка интерпретатора PHP в jail на сервер TrueNAS</h2>
 
@@ -744,3 +744,5 @@
     Changing local password for root
     New Password:
     Retype New Password:
+
+<h2 id="A9" align="center">Фильтры для приточной вентиляции</h2>
