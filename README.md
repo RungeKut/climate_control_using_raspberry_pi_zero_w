@@ -10,6 +10,7 @@
 <li><a href="#настроим-два-виртуальных-хоста-site-и-phpmyadmin">Настроим два виртуальных хоста site и phpMyAdmin</a></li>
 <li><a href="#настроим-ssh-в-jail-на-сервере-truenas-для-более-удобного-доступа-к-файлам">Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам</a></li>
 <li><a href="#фильтры-для-приточной-вентиляции">Фильтры для приточной вентиляции</a></li>
+<li><a href="#погода-и-календарь-на-Waveshare-display-7.5-inch-e-paper-HAT">Погода и календарь на Waveshare display 7.5 inch e-paper HAT</a></li>
 </ol>
 Это самое важное, особенно если есть маленький ребенок.
 
@@ -782,3 +783,7 @@
 Так же хочу отметить, для любителей сэкономить. Автомобильные моторные фильтра не подходят для пылесосов и уж темболее для вентиляции т.к. их эфективность ниже 85%. Они пропускают всю мелкую пыль и работают чисто по механическому принципу. Я лично убедился в этом, попробовав заменить в своем пылесосе фильтр на аналогичный автомобильный. В солнечных лучах меняя фильтры можно невооруженным глазом увидеть облако пыли, которое пропускает автомобильный фильтр.
 
 Исходя из всего вышеизложенного я пока остановлюсь на бумажном фильтре для пылесоса класса М [HEPA фильтр MAXX 00_11P_00](https://www.ozon.ru/product/hepa-filtr-maxx-00-11p-00-944891213/?advert=_ZGocWnG7rLAubeZOvLzm17onyOOT35BQaueqVM6Kt1jIefOcc02x6BfAPc8eOTaVZgvg9kbGUs_LCINevw7pii7KvFgKAFxpr7u5up9hPzguym3c71t2R2FQf-CKw0bd_jAkZhepZgZ9OZigOoePu7I0kTaQGAWFs_s9GyUABfRlzVYUvTgzKujJeb5qz7OHIok60tzjx9CJVpQcHb9iw&avtc=1&avte=2&avts=1683051923&sh=qpozlgy9Lg) для пылесоса Bosch GAS 35 M,L,AFC. Погоняю вентиляцию с ним. После года использования я заметил налет на крыльчатке вентилятора, который стоит после мешкового фильтра. Этот слой очень тонкий, но хотелось бы и его не иметь.
+
+<h2 id="A10" align="center">Погода и календарь на Waveshare display 7.5 inch e-paper HAT</h2>
+
+[Mendhak](https://code.mendhak.com/raspberrypi-epaper-dashboard/) [Mendhak-Git](https://github.com/mendhak/waveshare-epaper-display) [ESP8266](https://www.davidgf.net/2016/06/12/wifi_display/) 
