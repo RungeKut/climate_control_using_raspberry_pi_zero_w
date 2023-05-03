@@ -10,7 +10,7 @@
 <li><a href="#настроим-два-виртуальных-хоста-site-и-phpmyadmin">Настроим два виртуальных хоста site и phpMyAdmin</a></li>
 <li><a href="#настроим-ssh-в-jail-на-сервере-truenas-для-более-удобного-доступа-к-файлам">Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам</a></li>
 <li><a href="#фильтры-для-приточной-вентиляции">Фильтры для приточной вентиляции</a></li>
-<li><a href="#погода-и-календарь-на-Waveshare-display-7.5-inch-e-paper-HAT">Погода и календарь на Waveshare display 7.5 inch e-paper HAT</a></li>
+<li><a href="#погода-и-календарь-на-waveshare-display-75-inch-e-paper-hat">Погода и календарь на Waveshare display 7.5 inch e-paper HAT</a></li>
 </ol>
 Это самое важное, особенно если есть маленький ребенок.
 
