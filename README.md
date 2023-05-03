@@ -11,6 +11,7 @@
 <li><a href="#настроим-ssh-в-jail-на-сервере-truenas-для-более-удобного-доступа-к-файлам">Настроим SSH в jail на сервере TrueNAS для более удобного доступа к файлам</a></li>
 <li><a href="#фильтры-для-приточной-вентиляции">Фильтры для приточной вентиляции</a></li>
 <li><a href="#погода-и-календарь-на-waveshare-display-75-inch-e-paper-hat">Погода и календарь на Waveshare display 7.5 inch e-paper HAT</a></li>
+<li><a href="#погода-и-календарь-на-waveshare-display-75-inch-e-paper-hat">Управление вентилятором с помощью Raspberry</a></li>
 </ol>
 Это самое важное, особенно если есть маленький ребенок.
 
@@ -786,4 +787,14 @@
 
 <h2 id="A10" align="center">Погода и календарь на Waveshare display 7.5 inch e-paper HAT</h2>
 
-[Mendhak](https://code.mendhak.com/raspberrypi-epaper-dashboard/) [Mendhak-Git](https://github.com/mendhak/waveshare-epaper-display) [ESP8266](https://www.davidgf.net/2016/06/12/wifi_display/) 
+[Mendhak](https://code.mendhak.com/raspberrypi-epaper-dashboard/) [Mendhak-Git](https://github.com/mendhak/waveshare-epaper-display) [ESP8266](https://www.davidgf.net/2016/06/12/wifi_display/)
+
+<h2 id="A11" align="center">Управление вентилятором с помощью Raspberry</h2>
+
+
+
+    pi@raspberrypi:~ $ sudo su
+    root@raspberrypi:/home/pi# echo "26" > /sys/class/gpio/export
+    root@raspberrypi:/home/pi# echo "out" > /sys/class/gpio/gpio26/direction
+    root@raspberrypi:/home/pi# echo "1" > /sys/class/gpio/gpio26/value
+    root@raspberrypi:/home/pi#
