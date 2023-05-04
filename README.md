@@ -832,3 +832,10 @@
 И отправить ему команду: **AT**
 
 После каждой успешно выполненной команды модуль отвечает: **OK**
+
+[Деталька](http://we.easyelectronics.ru/part/rabota-s-bluetooth-modulem-hc05.html)
+
+# Полезные ссылки
+
++ [Bluetooth консоль для Raspberry](https://hacks.mozilla.org/2017/02/headless-raspberry-pi-configuration-over-bluetooth/)
++ [Cервер беспроводной консоли Bluetooth на Raspberry Pi Zero W](https://www.historiantech.com/create-a-bluetooth-wireless-console-server-with-raspberry-pi-zero-w/)
