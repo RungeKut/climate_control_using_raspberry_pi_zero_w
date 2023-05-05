@@ -10,9 +10,9 @@
 
 Потребляяемый ток: 50 мА
 
-[Datasheet](supplementary_files/HC-05 Datasheet.pdf)
+<a href="supplementary_files/HC-05 Datasheet.pdf">Datasheet</a>
 
-<p align="center"><img src="*supplementary_files/1.jpg"></p>
+<p align="center"><img src="supplementary_files/1.jpg"></p>
 
 Этот модуль может работать в 3-х режимах:
 1. **Master** (или сервер) — в этом режиме модуль может сам подключиться к какому-нибудь Bluetooth девайсу. AT+ROLE=1
@@ -41,5 +41,6 @@
 
 # Полезные ссылки
 
-+ [Bluetooth консоль для Raspberry](https://hacks.mozilla.org/2017/02/headless-raspberry-pi-configuration-over-bluetooth/)
-+ [Cервер беспроводной консоли Bluetooth на Raspberry Pi Zero W](https://www.historiantech.com/create-a-bluetooth-wireless-console-server-with-raspberry-pi-zero-w/)
++ [Таймер ШИМ HAL.](https://narodstream.ru/stm-urok-10-hal-izuchaem-pwm-shim-migaem-svetodiodami-plavno/)
++ [HAL Таймер в режиме захвата. Енкодер.](https://istarik.ru/blog/stm32/121.html)
++ [Подключаем bluetooth-модуль HC-05](https://narodstream.ru/stm-urok-97-podklyuchaem-bluetooth-modul-hc-05/)
