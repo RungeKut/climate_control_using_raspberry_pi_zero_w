@@ -73,7 +73,7 @@ void SystemClock_Config(void);
 /* USER CODE BEGIN 0 */
 void string_parse(char* buf_str)
 {
-  HAL_UART_Transmit(&huart2,(uint8_t*)buf_str,strlen(buf_str),0x1000);
+  HAL_UART_Transmit(&huart3,(uint8_t*)buf_str,strlen(buf_str),0x1000);
   LL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
 }
 void UART2_RxCpltCallback(void)
@@ -84,7 +84,7 @@ void UART2_RxCpltCallback(void)
   if (usartprop.usart_cnt>59)
   {
     usartprop.usart_cnt=0;
-    HAL_UART_Receive_IT(&huart2,(uint8_t*)str1,1);
+    HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
     return;
   }
   usartprop.usart_buf[usartprop.usart_cnt] = b;
@@ -93,11 +93,11 @@ void UART2_RxCpltCallback(void)
     usartprop.usart_buf[usartprop.usart_cnt+1]=0;
     string_parse((char*)usartprop.usart_buf);
     usartprop.usart_cnt=0;
-    HAL_UART_Receive_IT(&huart2,(uint8_t*)str1,1);
+    HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
     return;
   }
   usartprop.usart_cnt++;
-  HAL_UART_Receive_IT(&huart2,(uint8_t*)str1,1);
+  HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
 }
 /* USER CODE END 0 */
 
@@ -130,20 +130,29 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM2_Init();
-  MX_USART2_UART_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
+  MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart2,(uint8_t*)str1,1);
-  HAL_TIM_Base_Start_IT(&htim2);
+  HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
+  
+  HAL_TIM_Base_Start_IT(&htim3); // запуск таймера датчика скорости воздуха
+  NVIC_EnableIRQ(TIM3_IRQn); // разрешаем его прерывания
+  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); // запускаем канал в режиме захвата
+  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2); // запускаем канал в режиме захвата
+  
+  HAL_TIM_Base_Start_IT(&htim4); // запуск таймера ШиМ вентилятора
+  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // включаем первый канал таймера
+  TIM4->CCR1=0x7FFF; // зададим начальную скважность ШиМ 50%
+  
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    LL_GPIO_TogglePin(GPIOC,LL_GPIO_PIN_13);
-    LL_mDelay(1000);
+    //LL_GPIO_TogglePin(GPIOC,LL_GPIO_PIN_13);
+    //LL_mDelay(1000);
     
     /* USER CODE END WHILE */
 
@@ -199,7 +208,7 @@ void SystemClock_Config(void)
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if(huart==&huart2)
+  if(huart==&huart3)
   {
     UART2_RxCpltCallback();
   }

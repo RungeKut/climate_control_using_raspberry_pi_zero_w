@@ -69,14 +69,10 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define GREEN_LED_Pin LL_GPIO_PIN_13
 #define GREEN_LED_GPIO_Port GPIOC
-#define BT_TX_Pin LL_GPIO_PIN_2
-#define BT_TX_GPIO_Port GPIOA
-#define BT_RX_Pin LL_GPIO_PIN_3
-#define BT_RX_GPIO_Port GPIOA
-#define BT_AT_CMD_EN_Pin LL_GPIO_PIN_5
-#define BT_AT_CMD_EN_GPIO_Port GPIOA
 #define FLOW_VELOCITY_Pin LL_GPIO_PIN_6
 #define FLOW_VELOCITY_GPIO_Port GPIOA
+#define BT_AT_CMD_EN_Pin LL_GPIO_PIN_1
+#define BT_AT_CMD_EN_GPIO_Port GPIOB
 #define FAN_CTRL_Pin LL_GPIO_PIN_6
 #define FAN_CTRL_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
