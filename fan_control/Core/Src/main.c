@@ -24,7 +24,8 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include <string.h>
+#include "bt_usart.h"
+#include "bluetooth.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -44,23 +45,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-char str1[60]={0};
-typedef struct USART_prop{
-  uint8_t usart_buf[60];
-  uint8_t usart_cnt;
-  uint8_t is_tcp_connect;//статус попытки создать соединение TCP с сервером
-  uint8_t is_text;//статус попытки передать текст серверу
-} USART_prop_ptr;
-USART_prop_ptr usartprop;
-uint8_t i=0;
-char *str2[] =
-{
-  "String1\r\n",
-  "String2\r\n",
-  "String3\r\n",
-  "String4\r\n",
-  "String5\r\n"
-};
+
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,34 +56,7 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-void string_parse(char* buf_str)
-{
-  HAL_UART_Transmit(&huart3,(uint8_t*)buf_str,strlen(buf_str),0x1000);
-  LL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
-}
-void UART2_RxCpltCallback(void)
-{
-  uint8_t b;
-  b = str1[0];
-  //если вдруг случайно превысим длину буфера
-  if (usartprop.usart_cnt>59)
-  {
-    usartprop.usart_cnt=0;
-    HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
-    return;
-  }
-  usartprop.usart_buf[usartprop.usart_cnt] = b;
-  if(b==0x0A)
-  {
-    usartprop.usart_buf[usartprop.usart_cnt+1]=0;
-    string_parse((char*)usartprop.usart_buf);
-    usartprop.usart_cnt=0;
-    HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
-    return;
-  }
-  usartprop.usart_cnt++;
-  HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
-}
+
 /* USER CODE END 0 */
 
 /**
@@ -129,13 +87,12 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM2_Init();
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
-  HAL_UART_Receive_IT(&huart3,(uint8_t*)str1,1);
-  
+  Ringbuf_init();
+  HC_05_init();
   HAL_TIM_Base_Start_IT(&htim3); // запуск таймера датчика скорости воздуха
   NVIC_EnableIRQ(TIM3_IRQn); // разрешаем его прерывания
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); // запускаем канал в режиме захвата
@@ -151,9 +108,6 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    //LL_GPIO_TogglePin(GPIOC,LL_GPIO_PIN_13);
-    //LL_mDelay(1000);
-    
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
@@ -206,13 +160,7 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
-{
-  if(huart==&huart3)
-  {
-    UART2_RxCpltCallback();
-  }
-}
+
 /* USER CODE END 4 */
 
 /**
