@@ -1411,6 +1411,11 @@
               <FileType>1</FileType>
               <FilePath>..\User\Src\bt_usart.c</FilePath>
             </File>
+            <File>
+              <FileName>bt_user_control.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\Src\bt_user_control.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

@@ -26,6 +26,7 @@
 /* USER CODE BEGIN Includes */
 #include "bt_usart.h"
 #include "bluetooth.h"
+#include "bt_user_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,6 +94,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   Ringbuf_init();
   HC_05_init();
+  CommandBuf_init();
   HAL_TIM_Base_Start_IT(&htim3); // запуск таймера датчика скорости воздуха
   NVIC_EnableIRQ(TIM3_IRQn); // разрешаем его прерывания
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); // запускаем канал в режиме захвата
@@ -108,6 +110,7 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+    bt_user_control();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
