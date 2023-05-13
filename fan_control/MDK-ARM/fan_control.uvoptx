@@ -173,7 +173,7 @@
         <Ww>
           <count>4</count>
           <WinNumber>1</WinNumber>
-          <ItemText>ventSpeed,0x0A</ItemText>
+          <ItemText>attemptConnect,0x0A</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -625,6 +625,18 @@
       <bDave2>0</bDave2>
       <PathWithFileName>..\User\Src\bt_user_control.c</PathWithFileName>
       <FilenameWithoutPath>bt_user_control.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>5</GroupNumber>
+      <FileNumber>30</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\User\Src\ir_NEC_remote_control.c</PathWithFileName>
+      <FilenameWithoutPath>ir_NEC_remote_control.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

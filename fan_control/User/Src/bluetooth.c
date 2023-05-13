@@ -23,13 +23,16 @@ uint8_t HC_05_isConnected(void)//Проверка связи с модулем
 
 void HC_05_init(void)
 {
+  uint8_t attemptConnect = 0;
   //Включаем режим приема АТ команд, подаем "1" на PIO11 модуля
   LL_GPIO_SetOutputPin(BT_AT_CMD_EN_GPIO_Port, BT_AT_CMD_EN_Pin);
   //Проверяем связь с модулем HC_05
   repeat1:
+  attemptConnect++;
   if (!HC_05_isConnected())
   {
     HAL_Delay (5000);
+    if (attemptConnect > 10) return; //Если больше 10ти попыток - выходим
     goto repeat1;
   }
   //Проверяем имя устройства
