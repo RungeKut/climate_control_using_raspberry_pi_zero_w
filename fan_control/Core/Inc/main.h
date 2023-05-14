@@ -59,9 +59,8 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define GREEN_LED_Pin GPIO_PIN_13
 #define GREEN_LED_GPIO_Port GPIOC
-#define NEC_input_Pin GPIO_PIN_4
-#define NEC_input_GPIO_Port GPIOA
-#define NEC_input_EXTI_IRQn EXTI4_IRQn
+#define NEC_RX_Pin GPIO_PIN_0
+#define NEC_RX_GPIO_Port GPIOA
 #define FLOW_VELOCITY_Pin GPIO_PIN_6
 #define FLOW_VELOCITY_GPIO_Port GPIOA
 #define BT_AT_CMD_EN_Pin GPIO_PIN_1

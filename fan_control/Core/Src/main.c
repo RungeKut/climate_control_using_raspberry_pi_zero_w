@@ -28,6 +28,7 @@
 #include "bluetooth.h"
 #include "bt_user_control.h"
 #include "ir_NEC_remote_control.h"
+#include "nec_decode.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,22 +94,23 @@ int main(void)
   MX_TIM4_Init();
   MX_USART3_UART_Init();
   MX_USART2_IRDA_Init();
+  MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   Ringbuf_init();
-  IrDA_Ringbuf_init();
+  //IrDA_Ringbuf_init();
   HC_05_init();
   CommandBuf_init();
   HAL_TIM_Base_Start_IT(&htim3); // запуск таймера датчика скорости воздуха
   NVIC_EnableIRQ(TIM3_IRQn); // разрешаем его прерывания
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); // запускаем канал в режиме захвата
   HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2); // запускаем канал в режиме захвата
-  
+  NEC_Init();
   HAL_TIM_Base_Start_IT(&htim4); // запуск таймера ШиМ вентилятора
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // включаем первый канал таймера
   TIM4->CCR1=0x7FFF; // зададим начальную скважность ШиМ 50%
   
   /* USER CODE END 2 */
-  
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)

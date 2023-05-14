@@ -1,6 +1,6 @@
 #include "nec_decode.h"
-#include "gpio.h"
-#include "stm32f1xx_hal_gpio_ex.h"
+#include "tim.h"
+#include "stm32f1xx_hal_tim.h"
 /*
 NEC_FRAME frame;
 NEC_FRAME lastFrame;
@@ -12,66 +12,22 @@ uint32_t thigh = 0;
 uint32_t tlow = 0;
 uint8_t p = 0;
 */
+#define timeStampBufferSize 300 //Размер буффера времени
+#define tolerance 150 //Разброс времени +-
+uint8_t isStartMessage = 0; //Начало новой посылки
+uint8_t pt = 0; //Член Массива времен
+volatile uint8_t timElapsedCount = 1; //Количество кругов таймера
+uint32_t timeStampBuffer[timeStampBufferSize] = {0}; //Массив с измеренными временами. Четное - период, Нечетное - длина импульса
+uint8_t timeStampBuffer_IsFull = 0; //Буфер времени заполнен
+
 void NEC_Init(void)
 {
-   NVIC_EnableIRQ(EXTI4_IRQn);
-  /*
-	GPIO_InitTypeDef GPIO_InitStructure;
-	NVIC_InitTypeDef NVIC_InitStructure;
-	EXTI_InitTypeDef EXTI_InitStructure;
-
-	RCC_APB2PeriphClockCmd(IR_GPIO_PORT_CLK, ENABLE);
-	//RCC_APB2PeriphClockCmd(RCC_APB1Periph_SYSCFG, ENABLE);
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN_FLOATING;
-	GPIO_InitStructure.GPIO_Pin = IR_GPIO_PIN;
-	GPIO_Init(IR_GPIO_PORT, &GPIO_InitStructure);
-
-//	SYSCFG_EXTILineConfig(IR_EXTI_PORT_SOURCE, IR_EXTI_PIN_SOURCE);
-	GPIO_EXTILineConfig(IR_EXTI_PORT_SOURCE, IR_EXTI_PIN_SOURCE);
-	EXTI_InitStructure.EXTI_Line = IR_EXTI_LINE;
-	EXTI_InitStructure.EXTI_Mode = EXTI_Mode_Interrupt;
-	EXTI_InitStructure.EXTI_Trigger = EXTI_Trigger_Rising_Falling;
-	EXTI_InitStructure.EXTI_LineCmd = ENABLE;
-	EXTI_Init(&EXTI_InitStructure);
-	EXTI_ClearITPendingBit(IR_EXTI_LINE);
-
-	NVIC_InitStructure.NVIC_IRQChannel = IR_NVIC_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 1;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-*/
+  HAL_TIM_Base_Start_IT(&htim2); // запуск таймера
+  NVIC_EnableIRQ(TIM2_IRQn); // разрешаем прерывания
+  HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // запускаем канал в режиме захвата
+  HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2); // запускаем канал в режиме захвата
 }
 /*
-uint32_t NEC_GetRawData() {
-	return rawdata;
-}
-
-void NEC_Reset() {
-	AGC_OK = 0;
-	pos = -10;	// change
-	p=0;
-	thigh=0;
-	tlow=0;
-	status = 0;
-	rawdata = 0;
-	frame.Address = 0;
-	frame.Command = 0;
-}
-
-void NEC_TimerRanOut() {
-	NEC_StopTimer();
-	if (AGC_OK == 1) {
-		frame = lastFrame;
-		NEC_ReceiveInterrupt(frame);
-		GPIO_SetBits(GPIOC, GPIO_Pin_9);
-		NEC_Reset();
-	} else {
-		GPIO_ResetBits(GPIOC, GPIO_Pin_9);
-		NEC_Reset();
-	}
-}
 
 void NEC_PushBit(uint8_t bit) {
 	bit &= 1;
@@ -177,11 +133,49 @@ void NEC_TimingDecode(uint32_t th, uint32_t tl) {
 	}
 }
 */
-void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
+void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
-  if(GPIO_Pin == GPIO_PIN_4)
+  if(htim->Instance == TIM2)
   {
-    HAL_GPIO_TogglePin(GPIOC, GPIO_PIN_13);
+    if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_1) // RISING с LOW на HIGH
+    {
+      if (!timeStampBuffer_IsFull)
+        timeStampBuffer[2*pt] = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_1) * timElapsedCount;
+    }
+    else if(htim->Channel == HAL_TIM_ACTIVE_CHANNEL_2) // FALLING с HIGH на LOW
+    {
+      if (isStartMessage)
+      {
+        TIM2->CNT = 0x0000; // обнуление счётчика
+        timElapsedCount = 1;
+        isStartMessage = 0;
+      }
+      else
+      {
+        if (!timeStampBuffer_IsFull)
+          timeStampBuffer[2*pt + 1] = HAL_TIM_ReadCapturedValue(htim, TIM_CHANNEL_2) * timElapsedCount;
+        if (pt > timeStampBufferSize/2-1) timeStampBuffer_IsFull = 1; else pt++;
+        TIM2->CNT = 0x0000; // обнуление счётчика
+        timElapsedCount = 1;
+      }
+    }
+  }
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if(htim->Instance == TIM2)
+  {
+    //считать только если прошло меньше 1сек
+    if (!isStartMessage)
+    {
+      if (timElapsedCount <= 15) timElapsedCount++; //15 переполнений это примерно 1 секунда
+      else
+      {
+        isStartMessage = 1; //Больше секунды - значит новая посылка
+        pt = 0;
+      }
+    }
   }
 }
 /*
@@ -204,7 +198,6 @@ void NEC_HandleEXTI(void)
 	}
 	GPIO_ResetBits(GPIOC, GPIO_Pin_8);
 }
-/*
 void NEC_StartTimer() { // Timer for overflow detection
 	NVIC_InitTypeDef NVIC_InitStructure;
 	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
