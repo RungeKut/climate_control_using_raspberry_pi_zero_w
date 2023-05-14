@@ -52,14 +52,17 @@
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 extern uint16_t timeout;
+extern uint16_t IrDA_timeout;
 /* USER CODE END 0 */
 
 /* External variables --------------------------------------------------------*/
 extern TIM_HandleTypeDef htim3;
 extern TIM_HandleTypeDef htim4;
+extern IRDA_HandleTypeDef hirda2;
 extern UART_HandleTypeDef huart3;
 /* USER CODE BEGIN EV */
 extern void Uart_isr (UART_HandleTypeDef *huart);
+extern void IrDA_Uart_isr (IRDA_HandleTypeDef *huart);
 /* USER CODE END EV */
 
 /******************************************************************************/
@@ -186,6 +189,7 @@ void SysTick_Handler(void)
 {
   /* USER CODE BEGIN SysTick_IRQn 0 */
   if(timeout > 0)  timeout--;
+  if(IrDA_timeout > 0)  IrDA_timeout--;
   /* USER CODE END SysTick_IRQn 0 */
   HAL_IncTick();
   /* USER CODE BEGIN SysTick_IRQn 1 */
@@ -226,6 +230,20 @@ void TIM4_IRQHandler(void)
   /* USER CODE BEGIN TIM4_IRQn 1 */
 
   /* USER CODE END TIM4_IRQn 1 */
+}
+
+/**
+  * @brief This function handles USART2 global interrupt.
+  */
+void USART2_IRQHandler(void)
+{
+  /* USER CODE BEGIN USART2_IRQn 0 */
+  IrDA_Uart_isr (&hirda2);
+  /* USER CODE END USART2_IRQn 0 */
+  //HAL_IRDA_IRQHandler(&hirda2);
+  /* USER CODE BEGIN USART2_IRQn 1 */
+
+  /* USER CODE END USART2_IRQn 1 */
 }
 
 /**

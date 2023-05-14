@@ -1,10 +1,10 @@
 #ifndef BT_USART
 #define BT_USART
 
+#include "stm32f1xx_hal.h"
+
 #define UART_BUFFER_SIZE 64
 #define uart &huart3
-
-#include "stm32f1xx_hal.h"
 
 typedef struct
 {

@@ -1,8 +1,78 @@
 #ifndef ir_NEC_remote_control
 #define ir_NEC_remote_control
 
-/* BEGIN Prototypes */
+#include "stm32f1xx_hal.h"
 
-/* END Prototypes */
+#define IrDA_BUFFER_SIZE 0xFF
+#define irda &hirda2
+
+typedef struct
+{
+  unsigned char buffer[IrDA_BUFFER_SIZE];
+  volatile unsigned int head;
+  volatile unsigned int tail;
+} IrDA_ring_buffer;
+
+
+/* Initialize the ring buffer */
+void IrDA_Ringbuf_init(void);
+
+/* reads the data in the rx_buffer and increment the tail count in rx_buffer */
+int IrDA_read(void);
+
+/* writes the data to the tx_buffer and increment the head count in tx_buffer */
+void IrDA_write(int c);
+
+/* function to send the string to the uart */
+void IrDA_sendstring(const char *s);
+
+/* Checks if the data is available to read in the rx_buffer */
+int IrDA_IsDataAvailable(void);
+
+
+/* Look for a particular string in the given buffer
+ * @return 1, if the string is found and -1 if not found
+ * @USAGE:: if (Look_for ("some string", buffer)) do something
+ */
+int IrDA_Look_for (char *str, char *buffertolookinto);
+
+/* Copies the required data from a buffer
+ * @startString: the string after which the data need to be copied
+ * @endString: the string before which the data need to be copied
+ * @USAGE:: GetDataFromBuffer ("name=", "&", buffertocopyfrom, buffertocopyinto);
+ */
+void IrDA_GetDataFromBuffer (char *startString, char *endString, char *buffertocopyfrom, char *buffertocopyinto);
+
+
+/* Resets the entire ring buffer, the new data will start from position 0 */
+void IrDA_flush (void);
+
+/* Copy the data from the Rx buffer into the bufferr, Upto and including the entered string 
+* This copying will take place in the blocking mode, so you won't be able to perform any other operations
+* Returns 1 on success and -1 otherwise
+* USAGE: while (!(Copy_Upto ("some string", buffer)));
+*/
+int IrDA_Copy_upto (char *string, char *buffertocopyinto);
+
+/* Copies the entered number of characters (blocking mode) from the Rx buffer into the buffer, after some particular string is detected
+* Returns 1 on success and -1 otherwise
+* USAGE: while (!(Get_after ("some string", 6, buffer)));
+*/
+int IrDA_Get_after (char *string, uint8_t numberofchars, char *buffertosave);
+
+/* Wait until a paricular string is detected in the Rx Buffer
+* Return 1 on success and -1 otherwise
+* USAGE: while (!(Wait_for("some string")));
+*/
+int IrDA_Wait_for (char *string);
+
+/*** Depreciated For now. This is not needed, try using other functions to meet the requirement ***/
+/* get the position of the given string within the incoming data.
+ * It returns the position, where the string ends 
+ */
+//uint16_t Get_position (char *string);
+
+/* once you hit 'enter' (\r\n), it copies the entire string to the buffer*/
+//void Get_string (char *buffer);
 
 #endif /* ir_NEC_remote_control */

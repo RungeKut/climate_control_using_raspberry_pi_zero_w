@@ -27,6 +27,7 @@
 #include "bt_usart.h"
 #include "bluetooth.h"
 #include "bt_user_control.h"
+#include "ir_NEC_remote_control.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,8 +92,10 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
+  MX_USART2_IRDA_Init();
   /* USER CODE BEGIN 2 */
   Ringbuf_init();
+  IrDA_Ringbuf_init();
   HC_05_init();
   CommandBuf_init();
   HAL_TIM_Base_Start_IT(&htim3); // запуск таймера датчика скорости воздуха
