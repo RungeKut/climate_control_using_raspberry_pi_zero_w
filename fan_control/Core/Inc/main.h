@@ -29,16 +29,6 @@ extern "C" {
 /* Includes ------------------------------------------------------------------*/
 #include "stm32f1xx_hal.h"
 
-#include "stm32f1xx_ll_rcc.h"
-#include "stm32f1xx_ll_bus.h"
-#include "stm32f1xx_ll_system.h"
-#include "stm32f1xx_ll_exti.h"
-#include "stm32f1xx_ll_cortex.h"
-#include "stm32f1xx_ll_utils.h"
-#include "stm32f1xx_ll_pwr.h"
-#include "stm32f1xx_ll_dma.h"
-#include "stm32f1xx_ll_gpio.h"
-
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 
@@ -67,13 +57,16 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define GREEN_LED_Pin LL_GPIO_PIN_13
+#define GREEN_LED_Pin GPIO_PIN_13
 #define GREEN_LED_GPIO_Port GPIOC
-#define FLOW_VELOCITY_Pin LL_GPIO_PIN_6
+#define NEC_input_Pin GPIO_PIN_4
+#define NEC_input_GPIO_Port GPIOA
+#define NEC_input_EXTI_IRQn EXTI4_IRQn
+#define FLOW_VELOCITY_Pin GPIO_PIN_6
 #define FLOW_VELOCITY_GPIO_Port GPIOA
-#define BT_AT_CMD_EN_Pin LL_GPIO_PIN_1
+#define BT_AT_CMD_EN_Pin GPIO_PIN_1
 #define BT_AT_CMD_EN_GPIO_Port GPIOB
-#define FAN_CTRL_Pin LL_GPIO_PIN_6
+#define FAN_CTRL_Pin GPIO_PIN_6
 #define FAN_CTRL_GPIO_Port GPIOB
 /* USER CODE BEGIN Private defines */
 

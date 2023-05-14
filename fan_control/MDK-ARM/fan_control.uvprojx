@@ -338,9 +338,9 @@
             <v6Rtti>0</v6Rtti>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define>USE_FULL_LL_DRIVER,STM32F103xB,USE_HAL_DRIVER</Define>
+              <Define>STM32F103xB,USE_HAL_DRIVER</Define>
               <Undefine></Undefine>
-              <IncludePath>../Core/Inc;     ../Drivers/STM32F1xx_HAL_Driver/Inc;     ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;     ../Drivers/CMSIS/Include;     ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;     ..\User\Inc;     ..\User\Src</IncludePath>
+              <IncludePath>../Core/Inc;         ../Drivers/STM32F1xx_HAL_Driver/Inc;         ../Drivers/CMSIS/Device/ST/STM32F1xx/Include;         ../Drivers/CMSIS/Include;         ../Drivers/STM32F1xx_HAL_Driver/Inc/Legacy;         ..\User\Inc;         ..\User\Src</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -639,11 +639,6 @@
               </FileOption>
             </File>
             <File>
-              <FileName>stm32f1xx_ll_gpio.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_gpio.c</FilePath>
-            </File>
-            <File>
               <FileName>stm32f1xx_hal_tim.c</FileName>
               <FileType>1</FileType>
               <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</FilePath>
@@ -754,21 +749,6 @@
                   </Cads>
                 </FileArmAds>
               </FileOption>
-            </File>
-            <File>
-              <FileName>stm32f1xx_ll_rcc.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_rcc.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_ll_utils.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_utils.c</FilePath>
-            </File>
-            <File>
-              <FileName>stm32f1xx_ll_exti.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_ll_exti.c</FilePath>
             </File>
             <File>
               <FileName>stm32f1xx_hal.c</FileName>
@@ -1476,6 +1456,11 @@
               <FileName>ir_NEC_remote_control.c</FileName>
               <FileType>1</FileType>
               <FilePath>..\User\Src\ir_NEC_remote_control.c</FilePath>
+            </File>
+            <File>
+              <FileName>nec_decode.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\User\Src\nec_decode.c</FilePath>
             </File>
           </Files>
         </Group>

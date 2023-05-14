@@ -25,7 +25,7 @@ void HC_05_init(void)
 {
   uint8_t attemptConnect = 0;
   //Включаем режим приема АТ команд, подаем "1" на PIO11 модуля
-  LL_GPIO_SetOutputPin(BT_AT_CMD_EN_GPIO_Port, BT_AT_CMD_EN_Pin);
+  HAL_GPIO_WritePin(BT_AT_CMD_EN_GPIO_Port, BT_AT_CMD_EN_Pin, GPIO_PIN_SET);
   //Проверяем связь с модулем HC_05
   repeat1:
   attemptConnect++;
@@ -90,7 +90,7 @@ void HC_05_init(void)
   //Выходим из режима АТ команд
   //repeat4:
   HAL_Delay (50);
-  LL_GPIO_ResetOutputPin(BT_AT_CMD_EN_GPIO_Port, BT_AT_CMD_EN_Pin);
+  HAL_GPIO_WritePin(BT_AT_CMD_EN_GPIO_Port, BT_AT_CMD_EN_Pin, GPIO_PIN_RESET);
   HAL_Delay (50);
   Uart_sendstring("AT+RESET\r\n");
   //if (!Wait_for("OK\r\n"))
