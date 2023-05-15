@@ -116,6 +116,7 @@ int main(void)
   while (1)
   {
     bt_user_control();
+    NEC_Task();
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
