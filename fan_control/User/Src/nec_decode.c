@@ -14,6 +14,7 @@ uint8_t p = 0;
 */
 #define timeStampBufferSize 300 //Размер буффера времени
 #define tolerance 15 //Разброс времени в % от ширины импульса (не периода, т.к. период следования переменный) +-
+#define bitLength 8 //Длинна посылки в байтах
 
 uint8_t isStartMessage = 0; //Начало новой посылки
 uint8_t pt = 0; //Член Массива времен
@@ -21,6 +22,7 @@ volatile uint8_t timElapsedCount = 1; //Количество кругов тай
 uint32_t timeStampBuffer[timeStampBufferSize] = {0}; //Массив с измеренными временами. Четное - период, Нечетное - длина импульса
 uint8_t timeStampBuffer_IsFull = 0; //Буфер времени заполнен
 uint8_t timeStampBuffer_IsLock = 0; //Буфер времени заблокирован для декодирования
+uint8_t cmdData[bitLength] = {0};
 
 void NEC_Init(void)
 {
@@ -107,9 +109,9 @@ void NEC_PushBit(uint8_t bit) {
 uint8_t NEC_TimingDecode(uint32_t duration, uint32_t period)
 {
 	uint32_t data = period * 100 / duration;
-	if ((data > (4 * (100 + tolerance))) && (data < (4 * (100 - tolerance))) return 1;
-	else if ((data > (2 * (100 + tolerance))) && (data < (2 * (100 - tolerance))) return 0;
-	else return 2;
+	if ((data > (4 * (100 + tolerance))) && (data < (4 * (100 - tolerance))) return 1; // 4 - это части периода. 1 часть импульс и 3 паузы такой же длинны (кодируется 1)
+	else if ((data > (2 * (100 + tolerance))) && (data < (2 * (100 - tolerance))) return 0; // 2 - это части периода. 1 часть импульс и 1 пауза такой же длинны (кодируется 0)
+	else return 2; // Если нет удовлетворительного  результата - возвращаем код ошибки.
 }
 
 void NEC_Task (void)
@@ -120,7 +122,8 @@ void NEC_Task (void)
 		for (uint8_t cell = 0; cell < timeStampBufferSize/2-1; cell++;)
 		{
 			data = NEC_TimingDecode(timeStampBuffer[2*cell], timeStampBuffer[2*cell+1]);
-			if (data > 1) return;
+			if (data > 1) return; // Если ошибка, то выходим без продолжения кодирования
+			
 		}
 	}
 }
