@@ -13,12 +13,14 @@ uint32_t tlow = 0;
 uint8_t p = 0;
 */
 #define timeStampBufferSize 300 //Размер буффера времени
-#define tolerance 150 //Разброс времени +-
+#define tolerance 15 //Разброс времени в % от ширины импульса (не периода, т.к. период следования переменный) +-
+
 uint8_t isStartMessage = 0; //Начало новой посылки
 uint8_t pt = 0; //Член Массива времен
 volatile uint8_t timElapsedCount = 1; //Количество кругов таймера
 uint32_t timeStampBuffer[timeStampBufferSize] = {0}; //Массив с измеренными временами. Четное - период, Нечетное - длина импульса
 uint8_t timeStampBuffer_IsFull = 0; //Буфер времени заполнен
+uint8_t timeStampBuffer_IsLock = 0; //Буфер времени заблокирован для декодирования
 
 void NEC_Init(void)
 {
@@ -27,7 +29,6 @@ void NEC_Init(void)
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_1); // запускаем канал в режиме захвата
   HAL_TIM_IC_Start_IT(&htim2, TIM_CHANNEL_2); // запускаем канал в режиме захвата
 }
-/*
 
 void NEC_PushBit(uint8_t bit) {
 	bit &= 1;
@@ -103,36 +104,27 @@ void NEC_PushBit(uint8_t bit) {
 	++pos;
 }
 
-void NEC_TimingDecode(uint32_t th, uint32_t tl) {
+uint8_t NEC_TimingDecode(uint32_t duration, uint32_t period)
+{
+	uint32_t data = period * 100 / duration;
+	if ((data > (4 * (100 + tolerance))) && (data < (4 * (100 - tolerance))) return 1;
+	else if ((data > (2 * (100 + tolerance))) && (data < (2 * (100 - tolerance))) return 0;
+	else return 2;
+}
 
-	if (AGC_OK == 1) { // AGC Pulse has been received
-		if ((th <= T_PULSE * (1.0 + T_TOLERANCE)) && (th >= T_PULSE * (1.0
-				- T_TOLERANCE))) { // HIGH pulse is OK
-			if ((tl <= T_ZERO_SPACE * (1.0 + T_TOLERANCE)) && (tl
-					>= T_ZERO_SPACE * (1.0 - T_TOLERANCE))) { // LOW identified as ZERO
-				NEC_PushBit(0);
-			} else if ((tl <= T_ONE_SPACE * (1.0 + T_TOLERANCE)) && (tl
-					>= T_ONE_SPACE * (1.0 - T_TOLERANCE))) { // LOW identified as ONE
-				NEC_PushBit(1);
-			} else {
-				status = 3;
-				NEC_Reset();
-			}
-		} else {
-			status = 3;
-			NEC_Reset();
-		}
-	} else { //AGC Pulse has not been received yet
-		if ((th <= T_AGC_PULSE * (1.0 + T_TOLERANCE)) && (th >= T_AGC_PULSE
-				* (1.0 - T_TOLERANCE))) { // HIGH AGC Pulse is OK
-			if ((tl <= T_AGC_SPACE * (1.0 + T_TOLERANCE)) && (tl >= T_AGC_SPACE
-					* (1.0 - T_TOLERANCE))) { // LOW AGC Pulse OK
-				AGC_OK = 1;
-			}
+void NEC_Task (void)
+{
+	if (timeStampBuffer_IsLock)
+	{
+		uint8_t data = 0;
+		for (uint8_t cell = 0; cell < timeStampBufferSize/2-1; cell++;)
+		{
+			data = NEC_TimingDecode(timeStampBuffer[2*cell], timeStampBuffer[2*cell+1]);
+			if (data > 1) return;
 		}
 	}
 }
-*/
+
 void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
 {
   if(htim->Instance == TIM2)
@@ -173,89 +165,13 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
       else
       {
         isStartMessage = 1; //Больше секунды - значит новая посылка
+	timeStampBuffer_IsLock = 1; //Блокируем чтобы провести декодирование
         pt = 0;
       }
     }
   }
 }
 /*
-void NEC_HandleEXTI(void)
-{
-	GPIO_SetBits(GPIOC, GPIO_Pin_8);
-	if (GPIO_ReadInputDataBit(IR_GPIO_PORT, IR_GPIO_PIN) == 0) { // pin is now HW:LOW,NEC:HIGH
-		if (p == 1) {
-			tlow = NEC_GetTime();
-			NEC_StopTimer();
-			NEC_TimingDecode(thigh, tlow);
-		} else if (p == 0) {
-			++p;
-		}
-		NEC_StartTimer();
-	} else { // pin is now HW:HIGH,NEC:LOW
-		thigh = NEC_GetTime();
-		NEC_StopTimer();
-		NEC_StartTimer();
-	}
-	GPIO_ResetBits(GPIOC, GPIO_Pin_8);
-}
-void NEC_StartTimer() { // Timer for overflow detection
-	NVIC_InitTypeDef NVIC_InitStructure;
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-	// Enable the TIM2 gloabal Interrupt
-	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = ENABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-	// TIM2 clock enable
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, ENABLE);
-	// Time base configuration
-	TIM_TimeBaseStructure.TIM_Period = 12000; // 12ms oveflow
-//	TIM_TimeBaseStructure.TIM_Prescaler = 84 - 1; // 84 MHz Clock down to 1 MHz (adjust per your clock to count microseconds)
-	TIM_TimeBaseStructure.TIM_Prescaler = 24 - 1; // 84 MHz Clock down to 1 MHz (adjust per your clock to count microseconds)
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
-
-	TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-	// TIM IT enable
-	TIM_ITConfig(TIM2, TIM_IT_Update, ENABLE);
-	// TIM5 enable counter
-	TIM_Cmd(TIM2, ENABLE);
-
-}
-
-uint16_t NEC_GetTime() {
-	return (uint16_t)(TIM2->CNT);
-}
-
-void NEC_StopTimer() {
-	NVIC_InitTypeDef NVIC_InitStructure;
-	TIM_TimeBaseInitTypeDef TIM_TimeBaseStructure;
-	// Enable the TIM2 gloabal Interrupt
-	NVIC_InitStructure.NVIC_IRQChannel = TIM2_IRQn;
-	NVIC_InitStructure.NVIC_IRQChannelPreemptionPriority = 4;
-	NVIC_InitStructure.NVIC_IRQChannelSubPriority = 0;
-	NVIC_InitStructure.NVIC_IRQChannelCmd = DISABLE;
-	NVIC_Init(&NVIC_InitStructure);
-
-	// TIM2 clock disable
-	RCC_APB1PeriphClockCmd(RCC_APB1Periph_TIM2, DISABLE);
-	// Time base configuration
-	TIM_TimeBaseStructure.TIM_Period = 12000; // 12ms oveflow
-	//TIM_TimeBaseStructure.TIM_Prescaler = 42 - 1; // 42 MHz Clock down to 1 MHz (adjust per your clock to count microseconds)
-	TIM_TimeBaseStructure.TIM_Prescaler = 24 - 1; // 42 MHz Clock down to 1 MHz (adjust per your clock to count microseconds)
-	TIM_TimeBaseStructure.TIM_ClockDivision = 0;
-	TIM_TimeBaseStructure.TIM_CounterMode = TIM_CounterMode_Up;
-	TIM_TimeBaseInit(TIM2, &TIM_TimeBaseStructure);
-	// TIM IT enable
-	TIM_ITConfig(TIM2, TIM_IT_Update, DISABLE);
-	// TIM5 enable counter
-	TIM_Cmd(TIM2, DISABLE);
-}
-
-
 void Int2Str(char *str, u32 intnum) {
 	u32 Div = 1000000000;
 	int i, j = 0, Status = 0;
@@ -271,34 +187,4 @@ void Int2Str(char *str, u32 intnum) {
 			Status++;
 		}
 	}
-}
-
-void TIM2_IRQHandler() {
-	if (TIM_GetITStatus(TIM2, TIM_IT_Update) != RESET) {
-		TIM_ClearITPendingBit(TIM2, TIM_IT_Update);
-		NEC_TimerRanOut();
-	}
-}
-
-void EXTI0_IRQHandler() {
-	if (EXTI_GetITStatus(IR_EXTI_LINE) != RESET) {
-		NEC_HandleEXTI();
-	}
-	EXTI_ClearITPendingBit(IR_EXTI_LINE);
-}
-
-void NEC_ReceiveInterrupt(NEC_FRAME f) {
-	char buf[12];
-	uint8_t i;
-	LCD_YX(1,0);
-	for (i=0; i<17; i++){
-		LCD_Str(" ");
-	}
-
-	LCD_YX(1, 1);
-	Int2Str(buf, f.Address);
-	LCD_Str(buf);
-	LCD_YX(1, 8);
-	Int2Str(buf, f.Command);
-	LCD_Str(buf);
 }*/
