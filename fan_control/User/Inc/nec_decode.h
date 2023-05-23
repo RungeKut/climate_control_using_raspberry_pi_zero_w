@@ -3,5 +3,6 @@
 
 void NEC_Init(void);
 void NEC_Task (void);
+void necDecodeCallback(void);
 
 #endif

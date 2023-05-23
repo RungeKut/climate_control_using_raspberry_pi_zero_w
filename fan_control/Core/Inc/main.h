@@ -61,8 +61,6 @@ void Error_Handler(void);
 #define GREEN_LED_GPIO_Port GPIOC
 #define NEC_RX_Pin GPIO_PIN_0
 #define NEC_RX_GPIO_Port GPIOA
-#define FLOW_VELOCITY_Pin GPIO_PIN_6
-#define FLOW_VELOCITY_GPIO_Port GPIOA
 #define BT_AT_CMD_EN_Pin GPIO_PIN_1
 #define BT_AT_CMD_EN_GPIO_Port GPIOB
 #define FAN_CTRL_Pin GPIO_PIN_6

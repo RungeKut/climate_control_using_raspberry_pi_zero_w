@@ -4,7 +4,7 @@
 
 #define timeStampBufferSize 300 //Размер буффера времени
 #define tolerance 20 //Разброс времени в % от ширины импульса (не периода, т.к. период следования переменный) +-
-#define bitLength 6 //Длинна посылки в байтах
+#define byteLength 6 //Длинна посылки в байтах
 
 #define high_Max 4*(100+tolerance) // 4 - это части периода. 1 часть импульс и 3 паузы такой же длинны (кодируется 1)
 #define high_Min 4*(100-tolerance)
@@ -48,7 +48,7 @@ volatile uint8_t timElapsedCount = 1; //Количество кругов тай
 volatile uint32_t timeStampBuffer[timeStampBufferSize] = {0}; //Массив с измеренными временами. Четное - период, Нечетное - длина импульса
 volatile uint8_t timeStampBuffer_IsFull = 0; //Буфер времени заполнен
 volatile uint8_t timeStampBuffer_IsLock = 0; //Буфер времени заблокирован для декодирования
-volatile uint8_t cmdData[bitLength] = {0};
+volatile uint8_t cmdData[byteLength] = {0};
 
 void NEC_Init(void)
 {
@@ -71,7 +71,7 @@ uint8_t NEC_TimingDecode(uint32_t duration, uint32_t period)
 
 void cmdData_Clear (void)
 {
-  for (uint8_t i = 0; i < bitLength; i++)
+  for (uint8_t i = 0; i < byteLength; i++)
 	{
     cmdData[i] = 0;
   }
@@ -104,7 +104,7 @@ void NEC_Task (void)
       {
         bitCount = 0;
         byteCount++;
-        if (byteCount >= bitLength) return;
+        if (byteCount >= byteLength) return;
         goto repeat;
       }
 		}
@@ -142,20 +142,17 @@ void HAL_TIM_IC_CaptureCallback(TIM_HandleTypeDef *htim)
   }
 }
 
-void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+void necDecodeCallback(void)
 {
-  if(htim->Instance == TIM2)
+  //считать только если прошло меньше 1сек
+  if (!isStartMessage)
   {
-    //считать только если прошло меньше 1сек
-    if (!isStartMessage)
+    if (timElapsedCount <= 2) timElapsedCount++; //15 переполнений это примерно 1 секунда
+    else
     {
-      if (timElapsedCount <= 2) timElapsedCount++; //15 переполнений это примерно 1 секунда
-      else
-      {
-        isStartMessage = 1; //Больше секунды - значит новая посылка
-        timeStampBuffer_IsLock = 1; //Блокируем чтобы провести декодирование
-        pt = 0;
-      }
+      isStartMessage = 1; //Больше секунды - значит новая посылка
+      timeStampBuffer_IsLock = 1; //Блокируем чтобы провести декодирование
+      pt = 0;
     }
   }
 }

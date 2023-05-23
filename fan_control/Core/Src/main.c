@@ -93,17 +93,13 @@ int main(void)
   MX_TIM3_Init();
   MX_TIM4_Init();
   MX_USART3_UART_Init();
-  MX_USART2_IRDA_Init();
   MX_TIM2_Init();
   /* USER CODE BEGIN 2 */
   Ringbuf_init();
   //IrDA_Ringbuf_init();
   HC_05_init();
   CommandBuf_init();
-  HAL_TIM_Base_Start_IT(&htim3); // запуск таймера датчика скорости воздуха
-  NVIC_EnableIRQ(TIM3_IRQn); // разрешаем его прерывания
-  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_1); // запускаем канал в режиме захвата
-  HAL_TIM_IC_Start_IT(&htim3, TIM_CHANNEL_2); // запускаем канал в режиме захвата
+  IrRemoteControInit();
   NEC_Init();
   HAL_TIM_Base_Start_IT(&htim4); // запуск таймера ШиМ вентилятора
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // включаем первый канал таймера
@@ -163,7 +159,23 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  if ( htim->Instance == TIM1 )
+  {
+  }
+  else if ( htim->Instance == TIM2 )
+  {
+    necDecodeCallback();
+  }
+  else if ( htim->Instance == TIM3 )
+  {
+    IrRemoteControlCallback();
+  }
+  else if ( htim->Instance == TIM4 )
+  {
+  }
+}
 /* USER CODE END 4 */
 
 /**
