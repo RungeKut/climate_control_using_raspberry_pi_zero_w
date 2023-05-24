@@ -13,15 +13,17 @@ void IrRemoteControInit(void)
 
 #define PREAMBLE 167 //Длина преамбулы для настройки приемника кондиционера
 #define HALFBIT 21 //Длина импульса бита посылки
-#define TRUEBIT 2 //Длина единицы, 1 импульс + 1 пауза
-#define FALSEBIT 4 //Длина нуля, 1 импульс + 3 паузы
+#define TRUEBIT 4 //Длина единицы, 1 импульс + 3 паузы
+#define FALSEBIT 2 //Длина нуля, 1 импульс + 1 пауза
 #define byteLength 6 //Длинна посылки в байтах
-const uint8_t MDV_on_26_low_cool[byteLength] = {0x4D,0xB2,0xF9,0x06,0x0B,0xF4};
+
 uint8_t ptr = 0; //Указатель на член массива передаваемых байт
 uint8_t bitMask = 1; //Бегущая маска
-uint16_t pulseСounter = 0; //Счетчик импульсов
+uint16_t pulseCounter = 0; //Счетчик импульсов
 uint8_t isSendComplete = 0; //Флаг завершения отправки
 uint8_t isSendPreamble = 0; //Флаг завершения отправки преамбулы
+uint8_t cmdPush[byteLength] = {0x4D,0xB2,0xF9,0x06,0x0B,0xF4};
+uint8_t dataLength = 0;
 
 void IrRemoteControlCallback(void)
 {
@@ -29,26 +31,55 @@ void IrRemoteControlCallback(void)
   {
     ptr = 0;
     bitMask = 1;
-    pulseСounter = 0;
+    pulseCounter = 0;
     isSendComplete = 0;
     isSendPreamble = 0;
   }
   else
   {
-    if ( !isSendPreamble )
+    if ( !isSendPreamble ) //Отправляем преамбулу
     {
-      if ( pulseСounter == 0 ) OUT_ON;
-      if ( pulseСounter == PREAMBLE ) OUT_OFF;
-      if ( pulseСounter == PREAMBLE*2 )
+      if ( pulseCounter == 0 ) OUT_ON;
+      if ( pulseCounter == PREAMBLE ) OUT_OFF;
+      if ( pulseCounter >= PREAMBLE*2 )
       {
         isSendPreamble = 1;
-        pulseСounter = 0;
+        pulseCounter = 0;
+        return;
       }
     }
-    else
+    else //Отправляем данные
     {
-      if ( MDV_on_26_low_cool[ptr]  )
+      if ( cmdPush[ptr] &&  bitMask == 0)
+      {
+        dataLength = FALSEBIT;
+      }
+      else
+      {
+        dataLength = TRUEBIT;
+      }
+      if ( pulseCounter == 0 )
+        OUT_ON;
+      if ( pulseCounter == HALFBIT )
+        OUT_OFF;
+      if ( pulseCounter >= HALFBIT*dataLength )
+      {
+        if ( ptr < byteLength )
+        {
+          if ( bitMask != 0x80 )
+            bitMask = bitMask << 1;
+          else
+          {
+            bitMask = 1;
+            ptr++;
+          }
+        }
+        else
+        {
+          isSendComplete = 1;
+        }
+      }
     }
-    pulseСounter++;
+    pulseCounter++;
   }
 }
