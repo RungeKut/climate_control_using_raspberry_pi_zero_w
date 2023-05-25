@@ -15,7 +15,7 @@ void IrRemoteControInit(void)
 #define HALFBIT 21 //Длина импульса бита посылки
 #define TRUEBIT 4 //Длина единицы, 1 импульс + 3 паузы
 #define FALSEBIT 2 //Длина нуля, 1 импульс + 1 пауза
-#define byteLength 6 //Длинна посылки в байтах
+#define byteLength 6 //Длина посылки в байтах
 
 uint8_t ptr = 0; //Указатель на член массива передаваемых байт
 uint8_t bitMask = 1; //Бегущая маска
@@ -23,11 +23,12 @@ uint16_t pulseCounter = 0; //Счетчик импульсов
 uint8_t isSendComplete = 0; //Флаг завершения отправки
 uint8_t isSendPreamble = 0; //Флаг завершения отправки преамбулы
 uint8_t cmdPush[byteLength] = {0x4D,0xB2,0xF9,0x06,0x0B,0xF4};
-uint8_t dataLength = 0;
+uint8_t dataLength = 0; //Длина бита, изменяющаяся при передаче
+uint8_t isSendSleep = 0; //Разрешение передачи
 
 void IrRemoteControlCallback(void)
 {
-  if ( isSendComplete )
+  if ( isSendComplete ) //Если передача завершена, возвращаем начальные условия
   {
     ptr = 0;
     bitMask = 1;
@@ -35,51 +36,66 @@ void IrRemoteControlCallback(void)
     isSendComplete = 0;
     isSendPreamble = 0;
   }
+  else if ( isSendSleep ) //Выходим если передача запрещена
+    return;
   else
   {
     if ( !isSendPreamble ) //Отправляем преамбулу
     {
-      if ( pulseCounter == 0 ) OUT_ON;
-      if ( pulseCounter == PREAMBLE ) OUT_OFF;
-      if ( pulseCounter >= PREAMBLE*2 )
+      if ( pulseCounter == 0 ) //Включаем генерацию
       {
-        isSendPreamble = 1;
-        pulseCounter = 0;
+        OUT_ON;
+      }
+      else if ( pulseCounter == PREAMBLE ) //На половине длинны отключаем
+      {
+        OUT_OFF;
+      }
+      else if ( pulseCounter >= PREAMBLE*2 ) //После передачи полной длинны преамбулы завершаем ее передачу
+      {
+        isSendPreamble = 1; //Преамбула передана
+        pulseCounter = 0; //Обнуляем счетчик импульсов
         return;
       }
     }
     else //Отправляем данные
     {
-      if ( cmdPush[ptr] &&  bitMask == 0)
+      if ( pulseCounter == 0 ) //Включаем генерацию
       {
-        dataLength = FALSEBIT;
-      }
-      else
-      {
-        dataLength = TRUEBIT;
-      }
-      if ( pulseCounter == 0 )
-        OUT_ON;
-      if ( pulseCounter == HALFBIT )
-        OUT_OFF;
-      if ( pulseCounter >= HALFBIT*dataLength )
-      {
-        if ( ptr < byteLength )
+        uint8_t data = cmdPush[ptr] && bitMask; //Смотрим значение текущего бита
+        if ( data == 0 ) //Выбираем длину
         {
-          if ( bitMask != 0x80 )
-            bitMask = bitMask << 1;
+          dataLength = FALSEBIT;
+        }
+        else
+        {
+          dataLength = TRUEBIT;
+        }
+        OUT_ON; //Включаем генерацию
+      }
+      else if ( pulseCounter == HALFBIT ) //На половине длинны отключаем
+      {
+        OUT_OFF;
+      }
+      else if ( pulseCounter >= HALFBIT*dataLength ) //После передачи полной выбранной длинны бита завершаем его передачу
+      {
+        if ( ptr < byteLength ) //Проверяем не закончилась ли команда
+        {
+          if ( bitMask != 0x80 ) //Проверяем не передан ли весь байт целиком
+          {
+            bitMask = bitMask << 1; //Если еще нет, то двигаемся к следующему биту
+          }
           else
           {
-            bitMask = 1;
-            ptr++;
+            bitMask = 1; //Если байт передан, ставим маску в начало
+            ptr++; //И выбираем следующий байт команды
           }
         }
         else
         {
-          isSendComplete = 1;
+          isSendComplete = 1; //Если команда закончилась ставим флаг завершения передачи
         }
       }
     }
-    pulseCounter++;
+    pulseCounter++; //Считаем импульсы (Количество перезагрузок таймера) (38кГц)
   }
 }
