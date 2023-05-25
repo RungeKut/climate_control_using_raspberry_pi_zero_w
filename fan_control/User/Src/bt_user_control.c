@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "main.h"
+#include "ir_NEC_remote_control.h"
 
 #define TIMEOUT_CMD 50  // 50ms timeout
 
@@ -80,12 +81,29 @@ void bt_user_control(void)
       TIM4->CCR1=speedToReg[ventSpeed];
     }
   }
+  else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "IrSendMessage", 13))
+  {
+    char *pEnd;
+    pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][14];
+    int length = strtol(pEnd, NULL, 10);
+    if ((length > 32) || (length < 1))
+    {
+      Uart_sendstring("Message length 1 - 32 byte!\r\n");
+    }
+    if ((length > 0) || (length < 10)) //Двигаем указатель в зависимости от разрядности числа
+      pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][16];
+    else if ((length > 9) || (length < 33))
+      pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][17];
+    for(uint8_t i = 0; i < length; i++) //Читаем само сообщение
+    {
+    }
+  }
   else if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "help"))
   {
     Uart_sendstring
     (
       "\r\n"
-      "Welcome to Vent control!\r\n"
+      "*** Welcome to Vent control! ***\r\n"
       "\r\n"
       "VentSpeed? - motor speed, %\r\n"
       "VentSpeed=58 - set motor speed, %\r\n"
