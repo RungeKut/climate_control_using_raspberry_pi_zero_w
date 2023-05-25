@@ -32,7 +32,7 @@ void HC_05_init(void)
   if (!HC_05_isConnected())
   {
     HAL_Delay (5000);
-    if (attemptConnect > 10) return; //Если больше 10ти попыток - выходим
+    if (attemptConnect > 3) return; //Если больше 3х попыток - выходим
     goto repeat1;
   }
   //Проверяем имя устройства
