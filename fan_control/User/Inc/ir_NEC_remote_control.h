@@ -2,6 +2,7 @@
 #define ir_NEC_remote_control
 
 #include "stm32f1xx_hal.h"
+#include "tim.h"
 
 void IrRemoteControInit(void);
 void IrRemoteControlCallback(void);

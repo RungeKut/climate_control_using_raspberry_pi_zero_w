@@ -32,7 +32,11 @@ void HC_05_init(void)
   if (!HC_05_isConnected())
   {
     HAL_Delay (5000);
-    if (attemptConnect > 3) return; //Если больше 3х попыток - выходим
+    if (attemptConnect > 10) //Если больше 10-ти попыток - выходим
+    {
+      HAL_GPIO_WritePin(BT_AT_CMD_EN_GPIO_Port, BT_AT_CMD_EN_Pin, GPIO_PIN_RESET);
+      return;
+    }
     goto repeat1;
   }
   //Проверяем имя устройства

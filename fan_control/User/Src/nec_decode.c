@@ -4,7 +4,7 @@
 
 #define timeStampBufferSize 300 //Размер буффера времени
 #define tolerance 20 //Разброс времени в % от ширины импульса (не периода, т.к. период следования переменный) +-
-#define byteLength 6 //Длинна посылки в байтах
+#define byteLength 32 //Длинна посылки в байтах
 
 #define high_Max 4*(100+tolerance) // 4 - это части периода. 1 часть импульс и 3 паузы такой же длинны (кодируется 1)
 #define high_Min 4*(100-tolerance)
@@ -48,7 +48,12 @@ volatile uint8_t timElapsedCount = 1; //Количество кругов тай
 volatile uint32_t timeStampBuffer[timeStampBufferSize] = {0}; //Массив с измеренными временами. Четное - период, Нечетное - длина импульса
 volatile uint8_t timeStampBuffer_IsFull = 0; //Буфер времени заполнен
 volatile uint8_t timeStampBuffer_IsLock = 0; //Буфер времени заблокирован для декодирования
-volatile uint8_t cmdData[byteLength] = {0};
+uint8_t cmdData[byteLength] = {0};
+
+uint8_t* IrGetMessage(void)
+{
+  return cmdData;
+}
 
 void NEC_Init(void)
 {

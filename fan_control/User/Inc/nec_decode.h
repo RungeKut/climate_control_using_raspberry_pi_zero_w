@@ -6,5 +6,6 @@
 void NEC_Init(void);
 void NEC_Task (void);
 void necDecodeCallback(void);
+uint8_t* IrGetMessage(void);
 
 #endif

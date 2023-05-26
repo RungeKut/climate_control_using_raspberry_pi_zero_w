@@ -104,7 +104,6 @@ int main(void)
   HAL_TIM_Base_Start_IT(&htim4); // запуск таймера ШиМ вентилятора
   HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // включаем первый канал таймера
   TIM4->CCR1=0x7FFF; // зададим начальную скважность ШиМ 50%
-  uint8_t arr[] = {0x4D,0xB2,0xF8,0x07,0x10,0xEF};
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -114,8 +113,8 @@ int main(void)
     bt_user_control();
     NEC_Task();
     
-    IrSendMessage(6, arr, 1);
-    HAL_Delay(1000);
+    //IrSendMessage(6, arr, 1);
+    //HAL_Delay(1000);
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
