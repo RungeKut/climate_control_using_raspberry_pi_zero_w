@@ -94,9 +94,14 @@ void bt_user_control(void)
       pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][16];
     else if ((length > 9) || (length < 33))
       pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][17];
+	uint8_t message[length] = {0};
     for(uint8_t i = 0; i < length; i++) //Читаем само сообщение
     {
+	    message[i] = strtol(pEnd, &pEnd, 16);
     }
+	  pEnd++;
+	  int repeat = strtol(pEnd, NULL, 10);
+	  IrSendMessage(length, message, repeat);
   }
   else if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "help"))
   {
