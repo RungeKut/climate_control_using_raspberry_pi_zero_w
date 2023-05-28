@@ -799,6 +799,17 @@
     root@raspberrypi:/home/pi# echo "1" > /sys/class/gpio/gpio26/value
     root@raspberrypi:/home/pi#
 
+sudo apt-get install python3-jedi
+sudo bluetoothctl
+agent on
+scan on
+Копируем адрес нашего устройства
+20:13:05:22:01:70 Vent_control
+20:13:05:22:01:38 Temp_control
+sudo rfcomm bind 7 20:13:05:22:01:38
+sudo rfcomm bind 8 20:13:05:22:01:70
+Вставим эти команды в /etc/rc.local
+
 # Полезные ссылки
 
 + [Bluetooth консоль для Raspberry](https://hacks.mozilla.org/2017/02/headless-raspberry-pi-configuration-over-bluetooth/)
