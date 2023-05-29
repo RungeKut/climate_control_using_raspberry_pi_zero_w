@@ -45,23 +45,54 @@
 + [HAL Таймер в режиме захвата. Енкодер.](https://istarik.ru/blog/stm32/121.html)
 + [Подключаем bluetooth-модуль HC-05](https://narodstream.ru/stm-urok-97-podklyuchaem-bluetooth-modul-hc-05/)
 
-0100 1101 1011 0010 1111 1001 0000 0110
-
-17_low_cool = 4D B2 F9 06 00 FF = 0000 0000 1111 1111
-18_low_cool = 4D B2 F9 06 08 F7 = 0000 1000 1111 0111
-19_low_cool = 4D B2 F9 06 0C F3 = 0000 1100 1111 0011
-20_low_cool = 4D B2 F9 06 04 FB = 0000 0100 1111 1011
-21_low_cool = 4D B2 F9 06 06 F9 = 0000 0110 1111 1001
-22_low_cool = 4D B2 F9 06 0E F1 = 0000 1110 1111 0001
-23_low_cool = 4D B2 F9 06 0A F5 = 0000 1010 1111 0101
-24_low_cool = 4D B2 F9 06 02 FD = 0000 0010 1111 1101
-25_low_cool = 4D B2 F9 06 03 FC = 0000 0011 1111 1100
-26_low_cool = 4D B2 F9 06 0B F4 = 0000 1011 1111 0100
-27_low_cool = 4D B2 F9 06 09 F6 = 0000 1001 1111 0110
-28_low_cool = 4D B2 F9 06 01 FE = 0000 0001 1111 1110
-29_low_cool = 4D B2 F9 06 05 FA = 0000 0101 1111 1010
-30_low_cool = 4D B2 F9 06 0D F2 = 0000 1101 1111 0010
-
 38 кГц  35% скважность 72Мгц PSC=0x0766 CCR=0x5999
 
 21имп преамбула=167
+
+17_low_cool  = 4D B2 F9 06 00 FF
+18_low_cool  = 4D B2 F9 06 08 F7
+19_low_cool  = 4D B2 F9 06 0C F3
+20_low_cool  = 4D B2 F9 06 04 FB
+21_low_cool  = 4D B2 F9 06 06 F9
+22_low_cool  = 4D B2 F9 06 0E F1
+23_low_cool  = 4D B2 F9 06 0A F5
+24_low_cool  = 4D B2 F9 06 02 FD
+25_low_cool  = 4D B2 F9 06 03 FC
+26_low_cool  = 4D B2 F9 06 0B F4
+27_low_cool  = 4D B2 F9 06 09 F6
+28_low_cool  = 4D B2 F9 06 01 FE
+29_low_cool  = 4D B2 F9 06 05 FA
+30_low_cool  = 4D B2 F9 06 0D F2
+
+17_auto      = 4d b2 f8 07 10 ef
+18_auto      = 4d b2 f8 07 18 e7
+19_auto      = 4d b2 f8 07 1c e3
+20_auto      = 4d b2 f8 07 14 eb
+21_auto      = 4d b2 f8 07 16 e9
+22_auto      = 4d b2 f8 07 1e e1
+23_auto      = 4d b2 f8 07 1a e5
+24_auto      = 4d b2 f8 07 12 ed
+25_auto      = 4d b2 f8 07 13 ec
+26_auto      = 4d b2 f8 07 1b e4
+27_auto      = 4d b2 f8 07 19 e6
+28_auto      = 4d b2 f8 07 11 ee
+29_auto      = 4d b2 f8 07 15 ea
+30_auto      = 4d b2 f8 07 1d e2
+
+17_low_auto  = 4D B2 F8 07 10 EF
+17_low_fan   = 4D B2 F9 06 27 D8
+17_low_heat  = 4D B2 F9 06 30 CF
+17_low_dry   = 4D B2 F8 07 20 DF
+17_auto_cool = 4D B2 FD 02 00 FF
+17_high_cool = 4D B2 FC 03 00 FF
+17_med_cool  = 4D B2 FA 05 00 FF
+
+off          = 4D B2 DE 21 07 F8
+sleepOn      = 4D B2 07 F8 C0 3F
+sleepOff     = 4D B2 FD 02 0B F4
+swing        = 4D B2 D6 29 07 F8
+direct       = 4D B2 F0 0F 07 F8
+shortCut     = 4D B2 F8 07 1B E4
+clean        = AD 52 AF 50 55 AA
+ledDisplay   = AD 52 AF 50 A5 5A
+turbo        = AD 52 AF 50 45 BA

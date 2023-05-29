@@ -14,6 +14,7 @@ typedef struct
 /* BEGIN Prototypes */
 void CommandBuf_init(void);
 void bt_user_control(void);
+void bt_IrGetMessageAfterRecive(void);
 
 /* END Prototypes */
 

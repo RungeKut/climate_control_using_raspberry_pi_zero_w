@@ -58,89 +58,72 @@ void CmdBufferUpdate(void)
   _cmd_buffer->head = i;
 }
 
-void bt_user_control(void)
+/* Пользовательские функции */
+
+void bt_IrSendMessage(void) //Отправка данных через инфракрасный диод
 {
-  CmdBufferUpdate();
-  
-  if(_cmd_buffer->head == _cmd_buffer->tail) return;
-  if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "VentSpeed?"))
+  char *pEnd;
+  pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][14];
+  int length = strtol(pEnd, NULL, 10);
+  if ((length > maxByteLength) || (length < 1))
   {
-    char str [3];
-    snprintf(str, 3, "%d", ventSpeed);
-    Uart_sendstring(str);
+    Uart_sendstring("Message length 1 - 32 byte!\r\n");
   }
-  else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "VentSpeed=", 10))
+  if ((length > 0) || (length < 10)) //Двигаем указатель в зависимости от разрядности числа
+    pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][16];
+  else if ((length >= 10) || (length <= maxByteLength))
+    pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][17];
+
+  for(uint8_t i = 0; i < length; i++) //Читаем само сообщение
   {
-    char *pEnd;
-    pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][10];
-    int data = strtol(pEnd, NULL, 10);
-    
-    if (data > 100)
-    {
-      Uart_sendstring("VentSpeed= 0 - 100 !\r\n");
-    }
-    else
-    {
-      ventSpeed = data;
-      TIM4->CCR1=speedToReg[ventSpeed];
-    }
+   message[i] = strtol(pEnd, &pEnd, 16);
   }
-  else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "IrSendMessage", 13))
+ pEnd++;
+ int repeat = strtol(pEnd, NULL, 10);
+ IrSendMessage(length, message, repeat);
+}
+
+void bt_IrGetMessage(void) //Вывод принятых через инфракрасный приемник данных
+{
+  char buf[128] = {0}, *pos = buf;
+  uint8_t *posDat = IrGetMessage();
+  uint8_t len = 0;
+  for (int i = 1 ; i < maxByteLength ; i++)
   {
-    char *pEnd;
-    pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][14];
-    int length = strtol(pEnd, NULL, 10);
-    if ((length > maxByteLength) || (length < 1))
-    {
-      Uart_sendstring("Message length 1 - 32 byte!\r\n");
-    }
-    if ((length > 0) || (length < 10)) //Двигаем указатель в зависимости от разрядности числа
-      pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][16];
-    else if ((length >= 10) || (length <= maxByteLength))
-      pEnd = &_cmd_buffer->buffer[_cmd_buffer->tail][17];
-	
-    for(uint8_t i = 0; i < length; i++) //Читаем само сообщение
-    {
-	    message[i] = strtol(pEnd, &pEnd, 16);
-    }
-	  pEnd++;
-	  int repeat = strtol(pEnd, NULL, 10);
-	  IrSendMessage(length, message, repeat);
+    uint8_t dat = *posDat;
+    if ( dat != 0 ) len = i; //Ищем длину сообщения в байтах
+    posDat++; //Берем следующий байт
   }
-  else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "IrGetMessage?", 13))
+  if ( len == 0 ) return;
+  char finishBuf[256] = {0}, *finishBufPos = finishBuf;
+  finishBufPos += sprintf(finishBufPos, "IrMessage length=");
+  finishBufPos += sprintf(finishBufPos, "%d", len);
+  finishBufPos += sprintf(finishBufPos, " message: ");
+  posDat = IrGetMessage();
+  for (int i = 0 ; i < len ; i++)
   {
-    char buf[128] = {0}, *pos = buf;
-    uint8_t *posDat = IrGetMessage();
-    uint8_t len = 0;
-    for (int i = 0 ; i < maxByteLength ; i++)
+    uint8_t dat = *posDat;
+    if (i)
     {
-      uint8_t dat = *posDat;
-      if ( dat != 0 ) len = i; //Ищем длину сообщения в байтах
-      posDat++; //Берем следующий байт
+      finishBufPos += sprintf(finishBufPos, " "); //Добавляем пробел между байтами
     }
-    char finishBuf[256] = {0}, *finishBufPos = finishBuf;
-    finishBufPos += sprintf(finishBufPos, "length=");
-    finishBufPos += sprintf(finishBufPos, "%d", len);
-    finishBufPos += sprintf(finishBufPos, " message:");
-    posDat = IrGetMessage();
-    for (int i = 0 ; i < len ; i++)
-    {
-      uint8_t dat = *posDat;
-      if (i)
-      {
-        finishBufPos += sprintf(finishBufPos, " "); //Добавляем пробел между байтами
-      }
-      finishBufPos += sprintf(finishBufPos, "%02x", dat); //Преобразуем число в строку в 16-тиричной форме
-      posDat++; //Берем следующий байт
-    }
-    if ( len >= maxByteLength - 1 )
-      finishBufPos += sprintf(pos, " Buffer overflow!");
-    finishBufPos += sprintf(pos, "\r\n");
-    Uart_sendstring(finishBuf);
+    finishBufPos += sprintf(finishBufPos, "%02x", dat); //Преобразуем число в строку в 16-тиричной форме
+    posDat++; //Берем следующий байт
   }
-  else if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "help"))
-  {
-    Uart_sendstring
+  if ( len >= maxByteLength - 1 )
+    finishBufPos += sprintf(finishBufPos, " Buffer overflow!");
+  finishBufPos += sprintf(finishBufPos, "\r\n");
+  Uart_sendstring(finishBuf);
+}
+
+void bt_IrGetMessageAfterRecive(void)
+{
+  bt_IrGetMessage();
+}
+
+void bt_SendHelp(void) //Вывод информации для пользователя
+{
+  Uart_sendstring
     (
       "\r\n"
       "*** Welcome to Vent control! ***\r\n"
@@ -155,11 +138,25 @@ void bt_user_control(void)
       "Ex.get: length=6 message:4D B2 F8 07 10 EF\r\n"
       "\r\n"
     );
-  }
-  else
-  {
-    Uart_sendstring("Please enter \"help\"\r\n");
-  }
+}
+
+
+/***** Командоаппарат *****/
+
+void bt_user_control(void)
+{
+  CmdBufferUpdate();
+  
+  if(_cmd_buffer->head == _cmd_buffer->tail) return;
+  
+  if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "IrSendMessage", 13)) bt_IrSendMessage();
+  
+  else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "IrGetMessage?", 13)) bt_IrGetMessage();
+  
+  else if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "help")) bt_SendHelp();
+  
+  else { Uart_sendstring("Please enter \"help\"\r\n"); }
+  
   _cmd_buffer->tail = (unsigned int)(_cmd_buffer->tail + 1) % COMMAND_BUFFER_SIZE;
   HAL_Delay (TIMEOUT_CMD);
   HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
