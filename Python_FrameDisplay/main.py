@@ -1,5 +1,15 @@
 import serial
 import time
+import datetime
+ 
+a = datetime.datetime.now().time()
+# hour, minute, second, microsecond
+b = datetime.time(14,0,0,0)
+ 
+d1 = datetime.timedelta(hours=a.hour, minutes=a.minute, seconds=a.second)
+d2 = datetime.timedelta(hours=b.hour, minutes=b.minute, seconds=b.second)
+ 
+print('Осталось:', d2-d1)
 
 Temp_control=serial.Serial(port="/dev/rfcomm7", baudrate=38400, timeout=10)
 Vent_control=serial.Serial(port="/dev/rfcomm8", baudrate=38400, timeout=10)
