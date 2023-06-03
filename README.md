@@ -800,12 +800,20 @@
     root@raspberrypi:/home/pi#
 
 sudo apt-get install python3-jedi
+sudo apt-get install python3-serial
 sudo bluetoothctl
 agent on
 scan on
 Копируем адрес нашего устройства
 20:13:05:22:01:70 Vent_control
 20:13:05:22:01:38 Temp_control
+pair 20:13:05:22:01:70
+pair 20:13:05:22:01:38
+scan off
+Дожидаемся удаления всех устройств из списка
+и проверяем наши устройства
+devices
+exit
 sudo rfcomm bind 7 20:13:05:22:01:38
 sudo rfcomm bind 8 20:13:05:22:01:70
 Вставим эти команды в /etc/rc.local

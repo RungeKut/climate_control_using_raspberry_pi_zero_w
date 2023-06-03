@@ -52,7 +52,7 @@ void cmdData_Clear (void)
   }
 }
 
-void NEC_Task (void)
+void NEC_RX_Executer(void)
 {
   uint8_t bitCount = 0;
   uint8_t byteCount = 0;

@@ -13,7 +13,7 @@ typedef struct
 
 /* BEGIN Prototypes */
 void CommandBuf_init(void);
-void bt_user_control(void);
+void BT_UI_Executer(void);
 void bt_IrGetMessageAfterRecive(void);
 
 /* END Prototypes */

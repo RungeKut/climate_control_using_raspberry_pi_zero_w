@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "i2c.h"
 #include "tim.h"
 #include "usart.h"
 #include "gpio.h"
@@ -29,6 +30,7 @@
 #include "bt_user_control.h"
 #include "ir_NEC_remote_control.h"
 #include "nec_decode.h"
+#include "aht21.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -91,9 +93,9 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_TIM3_Init();
-  MX_TIM4_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
+  MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   Ringbuf_init();
   //IrDA_Ringbuf_init();
@@ -101,18 +103,22 @@ int main(void)
   CommandBuf_init();
   IrRemoteControInit();
   NEC_Init();
-  HAL_TIM_Base_Start_IT(&htim4); // запуск таймера ШиМ вентилятора
-  HAL_TIM_PWM_Start(&htim4, TIM_CHANNEL_1); // включаем первый канал таймера
-  TIM4->CCR1=0x7FFF; // зададим начальную скважность ШиМ 50%
-  HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
+  
+  //AHT First start
+  AHT_Executer();
+  HAL_Delay(100);
+  AHT_Executer();
+  HAL_Delay(100);
+//  HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
-    bt_user_control();
-    NEC_Task();
+    BT_UI_Executer();
+    NEC_RX_Executer();
+    
     
     //IrSendMessage(6, arr, 1);
     //HAL_Delay(1000);

@@ -6,6 +6,7 @@
 #include "main.h"
 #include "ir_NEC_remote_control.h"
 #include "nec_decode.h"
+#include "aht21.h"
 
 #define TIMEOUT_CMD 50  // 50ms timeout
 #define maxByteLength 32 //Максимальная длина посылки в байтах
@@ -17,7 +18,7 @@ ring_command_buffer *_cmd_buffer;
 uint16_t speedToReg[101] = {0,655,1311,1966,2621,3277,3932,4587,5243,5898,6554,7209,7864,8520,9175,9830,10486,11141,11796,12452,13107,13762,14418,15073,15728,16384,17039,17694,18350,19005,19661,20316,20971,21627,22282,22937,23593,24248,24903,25559,26214,26869,27525,28180,28835,29491,30146,30801,31457,32112,32768,33423,34078,34734,35389,36044,36700,37355,38010,38666,39321,39976,40632,41287,41942,42598,43253,43908,44564,45219,45874,46530,47185,47841,48496,49151,49807,50462,51117,51773,52428,53083,53739,54394,55049,55705,56360,57015,57671,58326,58981,59637,60292,60948,61603,62258,62914,63569,64224,64880,65535};
 uint8_t ventSpeed = 50;
 uint8_t message[maxByteLength] = {0};
-  
+
 void CommandBuf_init(void)
 {
   _cmd_buffer = &cmd_buffer;
@@ -85,7 +86,6 @@ void bt_IrSendMessage(void) //Отправка данных через инфр�
 
 void bt_IrGetMessage(void) //Вывод принятых через инфракрасный приемник данных
 {
-  char buf[128] = {0}, *pos = buf;
   uint8_t *posDat = IrGetMessage();
   uint8_t len = 0;
   for (int i = 1 ; i < maxByteLength ; i++)
@@ -116,6 +116,16 @@ void bt_IrGetMessage(void) //Вывод принятых через инфрак
   Uart_sendstring(finishBuf);
 }
 
+void bt_GetClimate(void)
+{
+  float *ClimData = AHT_GetData();
+  char buf[20] = {0}, *bufPos = buf;
+  bufPos += sprintf(bufPos, "Climate:");
+  bufPos += sprintf(bufPos, "%.1f ", ClimData[0]);
+  bufPos += sprintf(bufPos, "%.1f", ClimData[1]);
+  Uart_sendstring(buf);
+}
+
 void bt_IrGetMessageAfterRecive(void)
 {
   bt_IrGetMessage();
@@ -126,10 +136,10 @@ void bt_SendHelp(void) //Вывод информации для пользова
   Uart_sendstring
     (
       "\r\n"
-      "*** Welcome to Vent control! ***\r\n"
+      "*** Welcome to Temp control in kids room! ***\r\n"
       "\r\n"
-      "VentSpeed? - motor speed, %\r\n"
-      "VentSpeed=58 - set motor speed, %\r\n"
+      "Climate? - Get Temperature °C & Humidity %\r\n"
+      "Ex.send: Climate:24.5 36.8\r\n"
       "\r\n"
       "IrSendMessage <lenhth> <message> <repeat>\r\n"
       "Ex.send: IrSendMessage 6 4D B2 F8 07 10 EF 2\r\n"
@@ -141,9 +151,9 @@ void bt_SendHelp(void) //Вывод информации для пользова
 }
 
 
-/***** Командоаппарат *****/
+/***** Исполнитель *****/
 
-void bt_user_control(void)
+void BT_UI_Executer(void)
 {
   CmdBufferUpdate();
   
@@ -152,6 +162,8 @@ void bt_user_control(void)
   if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "IrSendMessage", 13)) bt_IrSendMessage();
   
   else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "IrGetMessage?", 13)) bt_IrGetMessage();
+  
+  else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "Climate?", 8)) bt_GetClimate();
   
   else if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "help")) bt_SendHelp();
   

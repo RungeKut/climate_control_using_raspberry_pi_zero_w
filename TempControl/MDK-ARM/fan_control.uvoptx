@@ -148,7 +148,24 @@
           <Name>-UH -O10446 -SF10000 -C0 -A0 -I0 -HNlocalhost -HP7184 -P1 -N00("ARM CoreSight SW-DP (ARM Core") -D00(1BA01477) -L00(0) -TO131090 -TC10000000 -TT10000000 -TP21 -TDS8007 -TDT0 -TDC1F -TIEFFFFFFFF -TIP8 -FO23 -FD20000000 -FC800 -FN1 -FF0STM32F10x_128.FLM -FS08000000 -FL010000 -FP0($$Device:STM32F103C8$Flash\STM32F10x_128.FLM)</Name>
         </SetRegEntry>
       </TargetDriverDllRegistry>
-      <Breakpoint/>
+      <Breakpoint>
+        <Bp>
+          <Number>0</Number>
+          <Type>0</Type>
+          <LineNumber>24</LineNumber>
+          <EnabledFlag>1</EnabledFlag>
+          <Address>134223558</Address>
+          <ByteObject>0</ByteObject>
+          <HtxType>0</HtxType>
+          <ManyObjects>0</ManyObjects>
+          <SizeOfObject>0</SizeOfObject>
+          <BreakByAccess>0</BreakByAccess>
+          <BreakIfRCount>1</BreakIfRCount>
+          <Filename>..\User\Src\aht21.c</Filename>
+          <ExecCommand></ExecCommand>
+          <Expression>\\fan_control\../User/Src/aht21.c\24</Expression>
+        </Bp>
+      </Breakpoint>
       <WatchWindow1>
         <Ww>
           <count>0</count>
@@ -169,6 +186,16 @@
           <count>3</count>
           <WinNumber>1</WinNumber>
           <ItemText>cmd_buffer</ItemText>
+        </Ww>
+        <Ww>
+          <count>4</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>AHT_ClimateData</ItemText>
+        </Ww>
+        <Ww>
+          <count>5</count>
+          <WinNumber>1</WinNumber>
+          <ItemText>AHT_ADC_Raw</ItemText>
         </Ww>
       </WatchWindow1>
       <Tracepoint>
@@ -302,6 +329,18 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+      <PathWithFileName>../Core/Src/i2c.c</PathWithFileName>
+      <FilenameWithoutPath>i2c.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>2</GroupNumber>
+      <FileNumber>5</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
       <PathWithFileName>../Core/Src/tim.c</PathWithFileName>
       <FilenameWithoutPath>tim.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -309,7 +348,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>5</FileNumber>
+      <FileNumber>6</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -321,7 +360,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>6</FileNumber>
+      <FileNumber>7</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -333,7 +372,7 @@
     </File>
     <File>
       <GroupNumber>2</GroupNumber>
-      <FileNumber>7</FileNumber>
+      <FileNumber>8</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -347,13 +386,13 @@
 
   <Group>
     <GroupName>Drivers/STM32F1xx_HAL_Driver</GroupName>
-    <tvExp>0</tvExp>
+    <tvExp>1</tvExp>
     <tvExpOptDlg>0</tvExpOptDlg>
     <cbSel>0</cbSel>
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>3</GroupNumber>
-      <FileNumber>8</FileNumber>
+      <FileNumber>9</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -365,25 +404,13 @@
     </File>
     <File>
       <GroupNumber>3</GroupNumber>
-      <FileNumber>9</FileNumber>
-      <FileType>1</FileType>
-      <tvExp>0</tvExp>
-      <tvExpOptDlg>0</tvExpOptDlg>
-      <bDave2>0</bDave2>
-      <PathWithFileName>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</PathWithFileName>
-      <FilenameWithoutPath>stm32f1xx_hal_tim.c</FilenameWithoutPath>
-      <RteFlg>0</RteFlg>
-      <bShared>0</bShared>
-    </File>
-    <File>
-      <GroupNumber>3</GroupNumber>
       <FileNumber>10</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
-      <PathWithFileName>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</PathWithFileName>
-      <FilenameWithoutPath>stm32f1xx_hal_tim_ex.c</FilenameWithoutPath>
+      <PathWithFileName>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_i2c.c</PathWithFileName>
+      <FilenameWithoutPath>stm32f1xx_hal_i2c.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>
@@ -514,6 +541,30 @@
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
+      <PathWithFileName>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim.c</PathWithFileName>
+      <FilenameWithoutPath>stm32f1xx_hal_tim.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>22</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_tim_ex.c</PathWithFileName>
+      <FilenameWithoutPath>stm32f1xx_hal_tim_ex.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>3</GroupNumber>
+      <FileNumber>23</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>0</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
       <PathWithFileName>../Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_uart.c</PathWithFileName>
       <FilenameWithoutPath>stm32f1xx_hal_uart.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
@@ -529,7 +580,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>4</GroupNumber>
-      <FileNumber>22</FileNumber>
+      <FileNumber>24</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -549,7 +600,7 @@
     <RteFlg>0</RteFlg>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>23</FileNumber>
+      <FileNumber>25</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -561,7 +612,7 @@
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>24</FileNumber>
+      <FileNumber>26</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -573,9 +624,9 @@
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>25</FileNumber>
+      <FileNumber>27</FileNumber>
       <FileType>1</FileType>
-      <tvExp>1</tvExp>
+      <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\User\Src\bt_user_control.c</PathWithFileName>
@@ -585,7 +636,7 @@
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>26</FileNumber>
+      <FileNumber>28</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
@@ -597,13 +648,25 @@
     </File>
     <File>
       <GroupNumber>5</GroupNumber>
-      <FileNumber>27</FileNumber>
+      <FileNumber>29</FileNumber>
       <FileType>1</FileType>
       <tvExp>0</tvExp>
       <tvExpOptDlg>0</tvExpOptDlg>
       <bDave2>0</bDave2>
       <PathWithFileName>..\User\Src\nec_decode.c</PathWithFileName>
       <FilenameWithoutPath>nec_decode.c</FilenameWithoutPath>
+      <RteFlg>0</RteFlg>
+      <bShared>0</bShared>
+    </File>
+    <File>
+      <GroupNumber>5</GroupNumber>
+      <FileNumber>30</FileNumber>
+      <FileType>1</FileType>
+      <tvExp>1</tvExp>
+      <tvExpOptDlg>0</tvExpOptDlg>
+      <bDave2>0</bDave2>
+      <PathWithFileName>..\User\Src\aht21.c</PathWithFileName>
+      <FilenameWithoutPath>aht21.c</FilenameWithoutPath>
       <RteFlg>0</RteFlg>
       <bShared>0</bShared>
     </File>

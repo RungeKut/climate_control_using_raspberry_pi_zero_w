@@ -64,14 +64,14 @@
 29_low_cool  = 4D B2 F9 06 05 FA
 30_low_cool  = 4D B2 F9 06 0D F2
 
-17_auto      = 4d b2 f8 07 10 ef
-18_auto      = 4d b2 f8 07 18 e7
+17_auto      = 4d b2 f8 07 10 ef IrSendMessage 6 4d b2 f8 07 10 ef 1
+18_auto      = 4d b2 f8 07 18 e7 
 19_auto      = 4d b2 f8 07 1c e3
 20_auto      = 4d b2 f8 07 14 eb
 21_auto      = 4d b2 f8 07 16 e9
 22_auto      = 4d b2 f8 07 1e e1
 23_auto      = 4d b2 f8 07 1a e5
-24_auto      = 4d b2 f8 07 12 ed
+24_auto      = 4d b2 f8 07 12 ed IrSendMessage 6 4d b2 f8 07 12 ed 1
 25_auto      = 4d b2 f8 07 13 ec
 26_auto      = 4d b2 f8 07 1b e4
 27_auto      = 4d b2 f8 07 19 e6
@@ -80,7 +80,7 @@
 30_auto      = 4d b2 f8 07 1d e2
 
 17_low_auto  = 4D B2 F8 07 10 EF
-17_low_fan   = 4D B2 F9 06 27 D8
+17_low_fan   = 4D B2 F9 06 27 D8 IrSendMessage 6 4D B2 F9 06 27 D8 1
 17_low_heat  = 4D B2 F9 06 30 CF
 17_low_dry   = 4D B2 F8 07 20 DF
 17_auto_cool = 4D B2 FD 02 00 FF
@@ -96,3 +96,23 @@ shortCut     = 4D B2 F8 07 1B E4
 clean        = AD 52 AF 50 55 AA
 ledDisplay   = AD 52 AF 50 A5 5A
 turbo        = AD 52 AF 50 45 BA
+
+def GetTemperature()
+    with open('/sys/devices/platform/dht11@4/iio:device0/in_temp_input') as file:
+        try:
+            temp = file.readline()
+            temp = float(temp)/1000
+            return 'Temperature={0}°C'.format(temp)
+        except Exception as err:
+            print("****",err)
+            return None
+        
+def GetHumidity()
+    with open('/sys/devices/platform/dht11@4/iio:device0/in_humidityrelative_input') as file:
+        try:
+            hum = file.readline()
+            hum = float(hum)/1000
+            return 'Humidity={0}%'.format(hum)
+        except Exception as err:
+            print("****",err)
+            return None
