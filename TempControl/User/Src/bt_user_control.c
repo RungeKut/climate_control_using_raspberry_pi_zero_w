@@ -27,7 +27,7 @@ void CommandBuf_init(void)
 void CmdBufferUpdate(void)
 {
   if (!IsDataAvailable()) { return; }
-  HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_RESET);
+  //HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_RESET);
   unsigned int i = (unsigned int)(_cmd_buffer->head + 1) % COMMAND_BUFFER_SIZE;
 	if (i == _cmd_buffer->tail) return;
   
@@ -171,5 +171,5 @@ void BT_UI_Executer(void)
   
   _cmd_buffer->tail = (unsigned int)(_cmd_buffer->tail + 1) % COMMAND_BUFFER_SIZE;
   HAL_Delay (TIMEOUT_CMD);
-  HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
+  //HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
 }

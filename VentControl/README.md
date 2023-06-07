@@ -96,23 +96,3 @@ shortCut     = 4D B2 F8 07 1B E4
 clean        = AD 52 AF 50 55 AA
 ledDisplay   = AD 52 AF 50 A5 5A
 turbo        = AD 52 AF 50 45 BA
-
-def GetTemperature()
-    with open('/sys/devices/platform/dht11@4/iio:device0/in_temp_input') as file:
-        try:
-            temp = file.readline()
-            temp = float(temp)/1000
-            return 'Temperature={0}°C'.format(temp)
-        except Exception as err:
-            print("****",err)
-            return None
-        
-def GetHumidity()
-    with open('/sys/devices/platform/dht11@4/iio:device0/in_humidityrelative_input') as file:
-        try:
-            hum = file.readline()
-            hum = float(hum)/1000
-            return 'Humidity={0}%'.format(hum)
-        except Exception as err:
-            print("****",err)
-            return None

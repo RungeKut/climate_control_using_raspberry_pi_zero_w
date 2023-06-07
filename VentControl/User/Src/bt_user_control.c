@@ -64,9 +64,10 @@ void bt_user_control(void)
   if(_cmd_buffer->head == _cmd_buffer->tail) return;
   if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "VentSpeed?"))
   {
-    char str [3];
-    snprintf(str, 3, "%d", ventSpeed);
-    Uart_sendstring(str);
+    char buf[5] = {0}, *pos = buf;
+    pos += sprintf(pos, "%d", ventSpeed);
+    pos += sprintf(pos, "\r\n");
+    Uart_sendstring(buf);
   }
   else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "VentSpeed=", 10))
   {
