@@ -96,3 +96,38 @@ shortCut     = 4D B2 F8 07 1B E4
 clean        = AD 52 AF 50 55 AA
 ledDisplay   = AD 52 AF 50 A5 5A
 turbo        = AD 52 AF 50 45 BA
+
+
+#Выключение вентилятора
+        time = currentTime.strftime("%H:%M")
+#        if (time == ventOff):
+#            VentControlSend("VentSpeed=0")
+#        elif (time == ventOn):
+#        dp.VentControlSend("VentSpeed=40")
+            
+        if (time == condOn) and (condIsOn == 0):
+            condey.On()
+            condIsOn = 1
+            t2Hi = 0
+            t2Lo = 0
+            print("Кондиционер:on")
+        elif (time == condOff) and (condIsOn == 1):
+            condey.Off()
+            condIsOn = 0
+            t2Hi = 1
+            t2Lo = 1
+            print("Кондиционер:off")
+            
+        if (float(t2) > 26.5) and (t2Hi == 0):
+            dp.VentControlSend("IrSendMessage 6 4D B2 F9 06 0A F5 1") #23_low_cool
+            t2Hi = 1
+            t2Lo = 0
+            print("Кондиционер:cool")
+        elif (float(t2) < 25.5) and (t2Lo == 0):
+            dp.VentControlSend("IrSendMessage 6 4D B2 F9 06 27 D8 1") #low_fan
+            t2Hi = 0
+            t2Lo = 1
+            print("Кондиционер:fan")
+        elif (float(t2) > 28):
+            t2Hi = 0
+            t2Lo = 0

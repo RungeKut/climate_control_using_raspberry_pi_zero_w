@@ -1,41 +1,8 @@
-# *****************************************************************************
-# * | File        :	  epd7in5.py
-# * | Author      :   Waveshare team
-# * | Function    :   Electronic paper driver
-# * | Info        :
-# *----------------
-# * | This version:   V4.0
-# * | Date        :   2019-06-20
-# # | Info        :   python demo
-# -----------------------------------------------------------------------------
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documnetation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to  whom the Software is
-# furished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS OR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-# THE SOFTWARE.
-#
-
-
-import logging
 from . import epdconfig
 
 # Display resolution
 EPD_WIDTH       = 640
 EPD_HEIGHT      = 384
-
-logger = logging.getLogger(__name__)
 
 class EPD:
     def __init__(self):
@@ -58,6 +25,7 @@ class EPD:
     def send_command(self, command):
         epdconfig.digital_write(self.dc_pin, 0)
         epdconfig.digital_write(self.cs_pin, 0)
+        epdconfig.delay_ms(100)
         epdconfig.spi_writebyte([command])
         epdconfig.digital_write(self.cs_pin, 1)
 
@@ -70,14 +38,13 @@ class EPD:
     def send_data2(self, data):
         epdconfig.digital_write(self.dc_pin, 1)
         epdconfig.digital_write(self.cs_pin, 0)
+        epdconfig.delay_ms(100)
         epdconfig.spi_writebyte2(data)
         epdconfig.digital_write(self.cs_pin, 1)
         
     def ReadBusy(self):
-        logger.debug("e-Paper busy")
         while(epdconfig.digital_read(self.busy_pin) == 0):      # 0: idle, 1: busy
-            epdconfig.delay_ms(100)    
-        logger.debug("e-Paper busy release")
+            epdconfig.delay_ms(100)
         
     def init(self):
         if (epdconfig.module_init() != 0):
@@ -101,7 +68,7 @@ class EPD:
         self.send_data(0x3c)
         
         self.send_command(0x41) # TEMPERATURE_CALIBRATION
-        self.send_data(0x00)
+        self.send_data(0x5A) # 45°C
         
         self.send_command(0x50) # VCOM_AND_DATA_INTERVAL_SETTING
         self.send_data(0x96) #default = 77
