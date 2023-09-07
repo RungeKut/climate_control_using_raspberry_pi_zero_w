@@ -2,6 +2,9 @@
 var db_data = JSON.parse(document.getElementById('block').getAttribute('data-attr'));
 var db_temperature = JSON.parse(document.getElementById("block").getAttribute('data-temperature'));
 var db_humidity = JSON.parse(document.getElementById("block").getAttribute('data-humidity'));
+var db_fr1 = JSON.parse(document.getElementById('block').getAttribute('data-attrfr'));
+var db_fr2 = JSON.parse(document.getElementById("block").getAttribute('data-temperaturefr'));
+var db_fr3 = JSON.parse(document.getElementById("block").getAttribute('data-humidityfr'));
 
 (() => {
   // Graphs
@@ -9,11 +12,11 @@ var db_humidity = JSON.parse(document.getElementById("block").getAttribute('data
   // eslint-disable-next-line no-unused-vars
   var temperatureData =
   {
-    label: 'Температура, °C',
+    label: 'Температура в детской, °C',
   //fill: false, //если нужна линия без заливки
     data: db_temperature,
     tension: 0, //Кривая Безье – натяжение линии
-    backgroundColor: 'rgba(254,0,0,0.2)', //Цвет графика, секции или столбца
+    backgroundColor: 'rgba(255,0,0,0.2)', //Цвет графика, секции или столбца
     borderColor: 'red',
     borderWidth: 1,
     pointBorderColor: 'transparent',
@@ -27,10 +30,43 @@ var db_humidity = JSON.parse(document.getElementById("block").getAttribute('data
   }
   var humidityData =
   {
-    label: 'Влажность, %',
+    label: 'Влажность в детской, %',
     data: db_humidity,
     tension: 0, //Кривая Безье – натяжение линии
-    backgroundColor: 'rgba(0,0,254,0.2)', //Цвет графика, секции или столбца
+    backgroundColor: 'rgba(0,0,255,0.2)', //Цвет графика, секции или столбца
+    borderColor: 'blue', //Цвет рамки
+  //hoverBackgroundColor: "rgba(255,99,132,0.4)", //Цвет графика, секции или столбца при наведении курсора
+  //hoverBorderColor: "rgba(255,99,132,1)", //Цвет рамки при наведении курсора
+    borderWidth: 1, //
+    pointBorderColor: 'transparent',
+    pointBackgroundColor: 'transparent',
+    pointRadius: 0,
+    pointStyle: 'rectRounded'
+  }
+  var temperatureDatafr =
+  {
+    label: 'Температура в спальне, °C',
+  //fill: false, //если нужна линия без заливки
+    data: db_fr2,
+    tension: 0, //Кривая Безье – натяжение линии
+    backgroundColor: 'rgba(255,0,0,0.2)', //Цвет графика, секции или столбца
+    borderColor: 'red',
+    borderWidth: 1,
+    pointBorderColor: 'transparent',
+    pointBackgroundColor: 'transparent',
+    pointRadius: 0,
+    //pointHoverRadius: 10,
+    //pointHitRadius: 30,
+    //pointBorderWidth: 2,
+    pointStyle: 'rectRounded',
+  //cubicInterpolationMode: 'monotone'
+  }
+  var humidityDatafr =
+  {
+    label: 'Влажность в спальне, %',
+    data: db_fr3,
+    tension: 0, //Кривая Безье – натяжение линии
+    backgroundColor: 'rgba(0,0,255,0.2)', //Цвет графика, секции или столбца
     borderColor: 'blue', //Цвет рамки
   //hoverBackgroundColor: "rgba(255,99,132,0.4)", //Цвет графика, секции или столбца при наведении курсора
   //hoverBorderColor: "rgba(255,99,132,1)", //Цвет рамки при наведении курсора
@@ -55,7 +91,31 @@ var db_humidity = JSON.parse(document.getElementById("block").getAttribute('data
     scales: {
       yAxes: [{
         ticks: {
-          beginAtZero: false // Ось Y начинать отсчет с нуля
+          beginAtZero: false, // Ось Y начинать отсчет с нуля
+          stepSize: 1
+        },
+        gridLines: {
+          // Отображение линии.
+          display: true
+        }
+      }],
+      xAxes: [{
+        gridLines: {
+          display: true
+        },
+        // Тип декартовой оси: временная шкала.
+        type: 'time',
+        // Параметры временной шкалы.
+        time: {
+          // Формат отображения временной шкалы:
+          displayFormats: {
+            // почасовая: 'День/Месяц часы:минуты'.
+            hour: 'DDе HH:mm'
+          },
+          // unit: 'hour',
+          // Шаг сетки: каждые три часа.
+          stepSize: 3,
+          // Задаем формат даты для парсинга из русской локали.
         }
       }]
     },
@@ -76,19 +136,19 @@ var db_humidity = JSON.parse(document.getElementById("block").getAttribute('data
       }
     },
     tooltips: {
-      enabled: false, //Признак подключения всплывающих подсказок
-      custom:	null, //Подключение функции обработки
+      enabled: true, //Признак подключения всплывающих подсказок
+      /*custom:	null, //Подключение функции обработки
       mode:	'nearest', //Режим подключения; возможные значения [point, nearest, index, dataset, x, y]
       intersect: true, //true - представление подсказки при пересечении курсора с «графиком» false - постоянное представление подсказки
       position: 'average', //Позиционирование подсказки; возможные значения [average, nearest];
-      callbacks: { //Функция представления подсказки (пример);
+      /*callbacks: { //Функция представления подсказки (пример);
         labelColor: function(tooltipItem, chart) {
           return {
             borderColor: 'rgb(255, 255, 0)',
             backgroundColor: 'rgb(255, 0, 0)'
           }
         }
-      },
+      },*/
     //itemSort: , //Функция сортировки элементов подсказки
     //filter: , //Функция фильтрации элементов подсказки
       backgroundColor: 'rgba(0,0,0,0.8)', //Цвет фона окна
@@ -119,12 +179,24 @@ var db_humidity = JSON.parse(document.getElementById("block").getAttribute('data
   const myChart = new Chart(ctx, {
     type: 'line',
     data: {
-      labels: db_data,
-      datasets: [
-        temperatureData,
-        humidityData
-      ],
-    },
+        labels: db_data,
+        datasets: [
+          temperatureData,
+          humidityData
+        ],
+      },
+    options: chartOptions
+    })
+  
+  const mChart = new Chart(document.getElementById('mChart'), {
+    type: 'line',
+    data: {
+        labels: db_fr1,
+        datasets: [
+          temperatureDatafr,
+          humidityDatafr
+        ],
+      },
     options: chartOptions
     })
 })()
