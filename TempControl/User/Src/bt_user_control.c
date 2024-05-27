@@ -7,6 +7,7 @@
 #include "ir_NEC_remote_control.h"
 #include "nec_decode.h"
 #include "aht21.h"
+#include "scd30.h"
 
 #define TIMEOUT_CMD 50  // 50ms timeout
 #define maxByteLength 32 //Максимальная длина посылки в байтах
@@ -15,8 +16,6 @@ ring_command_buffer cmd_buffer = { { 0 }, 0, 0};
 
 ring_command_buffer *_cmd_buffer;
 
-uint16_t speedToReg[101] = {0,655,1311,1966,2621,3277,3932,4587,5243,5898,6554,7209,7864,8520,9175,9830,10486,11141,11796,12452,13107,13762,14418,15073,15728,16384,17039,17694,18350,19005,19661,20316,20971,21627,22282,22937,23593,24248,24903,25559,26214,26869,27525,28180,28835,29491,30146,30801,31457,32112,32768,33423,34078,34734,35389,36044,36700,37355,38010,38666,39321,39976,40632,41287,41942,42598,43253,43908,44564,45219,45874,46530,47185,47841,48496,49151,49807,50462,51117,51773,52428,53083,53739,54394,55049,55705,56360,57015,57671,58326,58981,59637,60292,60948,61603,62258,62914,63569,64224,64880,65535};
-uint8_t ventSpeed = 50;
 uint8_t message[maxByteLength] = {0};
 
 void CommandBuf_init(void)
@@ -118,11 +117,13 @@ void bt_IrGetMessage(void) //Вывод принятых через инфрак
 
 void bt_GetClimate(void)
 {
-  float *ClimData = AHT_GetData();
-  char buf[20] = {0}, *bufPos = buf;
+  //float *ClimData = AHT_GetData();
+	float *ClimData = SCD30_GetData();
+  char buf[26] = {0}, *bufPos = buf;
   bufPos += sprintf(bufPos, "Climate:");
   bufPos += sprintf(bufPos, "%.1f ", ClimData[0]);
-  bufPos += sprintf(bufPos, "%.1f", ClimData[1]);
+  bufPos += sprintf(bufPos, "%.1f ", ClimData[1]);
+	bufPos += sprintf(bufPos, "%.1f", ClimData[2]);
   Uart_sendstring(buf);
 }
 

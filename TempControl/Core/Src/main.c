@@ -31,6 +31,7 @@
 #include "ir_NEC_remote_control.h"
 #include "nec_decode.h"
 #include "aht21.h"
+#include "scd30.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -119,7 +120,7 @@ int main(void)
     BT_UI_Executer();
     NEC_RX_Executer();
     
-    
+    //SCD30_GetData();
     //IrSendMessage(6, arr, 1);
     //HAL_Delay(1000);
     /* USER CODE END WHILE */
