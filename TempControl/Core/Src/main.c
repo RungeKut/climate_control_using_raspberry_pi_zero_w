@@ -96,7 +96,7 @@ int main(void)
   MX_TIM3_Init();
   MX_USART3_UART_Init();
   MX_TIM2_Init();
-  MX_I2C1_Init();
+  //MX_I2C1_Init();
   /* USER CODE BEGIN 2 */
   Ringbuf_init();
   //IrDA_Ringbuf_init();
@@ -110,6 +110,8 @@ int main(void)
   HAL_Delay(100);
   AHT_Executer();
   HAL_Delay(100);
+	MX_I2C1_Init();
+	//hi2c1.Instance->DR;
   HAL_GPIO_WritePin(GREEN_LED_GPIO_Port, GREEN_LED_Pin, GPIO_PIN_SET);
   /* USER CODE END 2 */
 

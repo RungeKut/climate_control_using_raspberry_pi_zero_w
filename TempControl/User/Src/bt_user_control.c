@@ -119,11 +119,12 @@ void bt_GetClimate(void)
 {
   //float *ClimData = AHT_GetData();
 	float *ClimData = SCD30_GetData();
-  char buf[26] = {0}, *bufPos = buf;
+  char buf[30] = {0}, *bufPos = buf;
   bufPos += sprintf(bufPos, "Climate:");
   bufPos += sprintf(bufPos, "%.1f ", ClimData[0]);
   bufPos += sprintf(bufPos, "%.1f ", ClimData[1]);
 	bufPos += sprintf(bufPos, "%.1f", ClimData[2]);
+	bufPos += sprintf(bufPos, "\r\n");
   Uart_sendstring(buf);
 }
 
@@ -139,8 +140,8 @@ void bt_SendHelp(void) //Вывод информации для пользова
       "\r\n"
       "*** Welcome to Temp control in kids room! ***\r\n"
       "\r\n"
-      "Climate? - Get Temperature °C & Humidity %\r\n"
-      "Ex.send: Climate:24.5 36.8\r\n"
+      "Climate? - Get Temperature °C & Humidity % & CO2 ppm\r\n"
+      "Ex.send: Climate:24.5 36.8 658.9\r\n"
       "\r\n"
       "IrSendMessage <lenhth> <message> <repeat>\r\n"
       "Ex.send: IrSendMessage 6 4D B2 F8 07 10 EF 2\r\n"
@@ -166,7 +167,7 @@ void BT_UI_Executer(void)
   
   else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "Climate?", 8)) bt_GetClimate();
   
-  else if (!strcmp(_cmd_buffer->buffer[_cmd_buffer->tail], "help")) bt_SendHelp();
+  else if (!strncmp(_cmd_buffer->buffer[_cmd_buffer->tail], "help", 4)) bt_SendHelp();
   
   else { Uart_sendstring("Please enter \"help\"\r\n"); }
   
