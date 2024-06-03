@@ -19,7 +19,14 @@ fi
 #Отключим светодиод питания на ночь
 sudo echo 0 > /sys/class/leds/led0/brightness
 
+#Инициализируем два интерфейса Блютуз
+sudo rfcomm bind 7 20:13:05:22:01:38 &
+sudo rfcomm bind 8 20:13:05:22:01:70 &
+
+#Запустим скрипт для вентилятора
+sudo python3 /home/pi/e-Paper/RaspberryPi_JetsonNano/python/examples/mary_test.py # >> /home/pi/e-Paper/RaspberryPi_JetsonNano/python/examples/log.txt &
+
 #Запустим скрипт для температуры и влажности
-write_log_sensors dht21_to_db
+#write_log_sensors dht21_to_db &
 
 exit 0

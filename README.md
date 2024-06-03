@@ -41,6 +41,47 @@
 
 <p align="center"><img src="supplementary_files/13.jpg" width="600"></p>
 
+Далее для установки нам потребуется дистрибудив 2019-04-08-raspbian-stretch версия, предшествующаая buster.
+
+Качаем отсюда: https://downloads.raspberrypi.org/raspbian/images/raspbian-2019-04-09/2019-04-08-raspbian-stretch.zip
+
+Записываем образ на SD карту например с помощью USB Image Tool и не забываем положить в раздел boot пустой файл ssh и wpa_supplicant.conf, в котором указываем свои настройки сети.
+
+После успешной загрузки, подключаемся по SSH с помощью Bitvise SSH Client и копируем папку с проектом e-paper.
+
+А так же настраиваем /etc/rc.local
+
+Так же потребуется: sudo pip3 install pytz
+
+А далее тацы с бубном. А именно нужно поменять источник пакетов: sudo nano /etc/apt/sources.list на
+
+    deb http://legacy.raspbian.org/raspbian/ stretch main contrib non-free rpi
+    # Uncomment line below then 'apt-get update' to enable 'apt-get source'
+    #deb-src http://legacy.raspbian.org/raspbian/ stretch main contrib non-free rpi
+
+Но сервер доступен только по сертификату SSL. Надо поменять на https:// Но вот не задача, у нас старый сертификат в /etc/ssl/certs/ca-certificates.crt
+
+Procedure to add CA Certificates Manually
+
+It's been awhile since I manually updated CA certs on a client machine. The following procedure worked on my Raspberry Pi running Raspbian Stretch:
+
+Create a local cert directory:
+
+    mkdir /usr/share/ca-certificates/local
+Download the CA cert:
+
+    cd /usr/share/ca-certificates/local
+    wget https://entrust.com/root-certificates/entrust_l1k.cer
+Reformat the certificate into PEM:
+
+    openssl x509 -inform PEM  -in entrust_l1k.cer -outform PEM -out entrust_l1k.crt
+Reconfigure the ca-certificates package:
+
+    dpkg-reconfigure ca-certificates
+When prompted for what do to with new certificates, choose ask. And then select the entrust_l1k.crt with space.
+
+sudo apt-get install python3-pymysql
+
 <h2 id="A3" align="center">Установка MySQL базы данных в jail на сервер TrueNAS</h2>
 Для этого нас понадобиться Пул на котором будет храниться наша тюрьма.
 
