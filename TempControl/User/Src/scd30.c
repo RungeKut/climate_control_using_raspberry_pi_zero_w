@@ -15,6 +15,9 @@ uint32_t temperature_temp;
 uint32_t humidity_temp ;
 float SCD30_ClimateData[3]; //Температура, Влажность, Концентрация CO2
 
+float controlValue = 0;
+uint8_t controlValueCount = 0;
+
 /**** Start measurement ****/
 void co2_sensor_measure_start(void)
 {
@@ -94,6 +97,20 @@ void co2_sensor_measure_read(void)
 
 		humidity_temp = (mess_data[12] << 24)+(mess_data[13] << 16)+(mess_data[15] << 8)+(mess_data[16]);
 		SCD30_ClimateData[1] = *(float*)&humidity_temp;
+		
+		if (controlValue == SCD30_ClimateData[1])
+		{
+			controlValueCount++;
+			if (controlValueCount > 100)
+			{
+				Error_Handler();
+			}
+		}
+		else
+		{
+			controlValue = SCD30_ClimateData[1];
+			controlValueCount = 0;
+		}
 	}
 }
 
